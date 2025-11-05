@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-Week Transformation Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <!-- Chosen Palette: Calm Harmony (Gray-50, White, Gray-800, Blue-600 Accent) -->
+    <!-- Application Structure Plan: A 5-section SPA (Dashboard, Tracker, Diet, Workout, Goals) with sticky top navigation. The 'Dashboard' is task-oriented, synthesizing all pillars (workout, detailed meal schedule) for a user-selected 'day of the week'. The 'Tracker' page allows for user-input (weight) and visualizes progress. -->
+    <!-- Visualization & Content Choices: Report Info: 8-Week Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes goal vs. actual progress -> Library: Chart.js. | Report Info: 5-Day Split -> Goal: Organize -> Viz: Interactive Button/Detail List -> Interaction: Click buttons to show/hide details -> Justification: Quick access to daily exercises -> Library: Vanilla JS. | Report Info: Daily Schedules & Meals -> Goal: Synthesize -> Viz: Day-selector updating a schedule card -> Interaction: Click day to update text -> Justification: Core synthesis, combines schedule and diet for daily use -> Library: Vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        .nav-btn {
+            @apply px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors duration-150;
+        }
+        .nav-btn.active {
+            @apply bg-blue-600 text-white hover:bg-blue-700 hover:text-white;
+        }
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+        .card {
+            @apply bg-white shadow-lg rounded-xl p-6 overflow-hidden;
+        }
+        .day-btn {
+            @apply px-4 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white shadow border border-gray-200 hover:bg-gray-100 transition-colors duration-150 flex-1;
+        }
+        .day-btn.active {
+            @apply bg-blue-600 text-white shadow-inner;
+        }
+        .workout-btn {
+            @apply w-full text-left px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-100 transition-colors duration-150;
+        }
+        .workout-btn.active {
+            @apply bg-blue-100 text-blue-700;
+        }
+        .meal-card-header {
+            @apply cursor-pointer bg-gray-50 p-4 rounded-lg flex justify-between items-center;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        .calendar-day {
+            @apply w-full h-10 flex items-center justify-center text-xs font-medium rounded-lg bg-gray-100 text-gray-400;
+        }
+        .calendar-day.completed {
+            @apply bg-green-500 text-white font-bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="sticky top-0 bg-white shadow-md z-10">
+        <nav class="container mx-auto px-4 py-3 flex justify-center space-x-1 md:space-x-4">
+            <button class="nav-btn active" data-target="dashboard-page">Dashboard</button>
+            <button class="nav-btn" data-target="tracker-page">Tracker</button>
+            <button class="nav-btn" data-target="diet-page">Diet Plan</button>
+            <button class="nav-btn" data-target="workout-page">Workout Plan</button>
+            <button class="nav-btn" data-target="goals-page">Goals & Schedule</button>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- =======================
+             DASHBOARD PAGE
+        ======================== -->
+        <section class="page-section active" id="dashboard-page">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome to Your 8-Week Plan</h1>
+                <p class="text-lg text-gray-600">Use this dashboard to see your workout and full daily schedule. Select a day to get started.</p>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button class="day-btn" data-day="sun">Sun</button>
+                    <button class="day-btn" data-day="mon">Mon</button>
+                    <button class="day-btn" data-day="tue">Tue</button>
+                    <button class="day-btn" data-day="wed">Wed</button>
+                    <button class="day-btn" data-day="thu">Thu</button>
+                    <button class="day-btn" data-day="fri">Fri</button>
+                    <button class="day-btn" data-day="sat">Sat</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col gap-6">
+                    <div class="card">
+                        <h2 class="text-2xl font-semibold text-blue-700 mb-4">Today's Workout</h2>
+                        <div id="dashboard-workout">
+                            <p class="text-gray-500">Select a day above to see your plan.</p>
+                        </div>
+                        <div id="workout-complete-container" class="mt-4"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="text-2xl font-semibold text-blue-700 mb-4">Daily Water Tracker</h2>
+                        <div class="flex items-center justify-center space-x-4">
+                            <button id="water-minus-btn" class="bg-gray-200 text-gray-700 rounded-full w-10 h-10 text-2xl font-bold">-</button>
+                            <span id="water-count" class="text-3xl font-bold text-blue-600">0</span>
+                            <span class="text-xl text-gray-500">/ 16 glasses</span>
+                            <button id="water-plus-btn" class="bg-blue-600 text-white rounded-full w-10 h-10 text-2xl font-bold">+</button>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2">(Resets daily. 16 glasses ≈ 4 liters)</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="text-2xl font-semibold text-blue-700 mb-4">Today's Schedule & Meals</h2>
+                    <div id="dashboard-schedule" class="max-h-[550px] overflow-y-auto pr-2">
+                        <p class="text-gray-500">Select a day above to see your full schedule.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================
+             TRACKER PAGE
+        ======================== -->
+        <section class="page-section" id="tracker-page">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">My Progress Tracker</h1>
+                <p class="text-lg text-gray-600">Log your weight to see your progress plotted on the chart and review your workout consistency.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card">
+                    <h2 class="text-2xl font-semibold text-blue-700 mb-4">Log Your Weight</h2>
+                    <div class="flex space-x-2">
+                        <input type="number" id="weight-input" placeholder="Enter weight in kg (e.g., 89.5)" class="flex-1 p-3 border border-gray-300 rounded-lg">
+                        <button id="log-weight-btn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700">Log</button>
+                    </div>
+                    
+                    <h2 class="text-2xl font-semibold text-blue-700 my-4">Weight History</h2>
+                    <div class="overflow-y-auto max-h-64">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase">Weight (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="weight-history-table">
+                                <!-- Rows will be injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="text-2xl font-semibold text-blue-700 mb-4">Workout Consistency Calendar</h2>
+                    <p class="text-gray-600 mb-4">Days you marked 'Complete Workout' on the Dashboard will appear in green. Don't break the chain!</p>
+                    <div class="calendar-grid" id="consistency-calendar">
+                        <!-- Calendar days will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================
+             DIET PLAN PAGE
+        ======================== -->
+        <section class="page-section" id="diet-page">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Pillar 1: The Vegetarian Diet Plan</h1>
+                <p class="text-lg text-gray-600">This section details your high-protein vegetarian diet. Explore the core principles and all meal options here. This is the most critical part of your plan.</p>
+            </div>
+
+            <div class="card mb-6">
+                <h2 class="text-2xl font-semibold text-blue-700 mb-4">Core Dietary Principles</h2>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><strong>Water is Your Best Friend:</strong> Drink 3-4 liters per day. Start with a liter first thing in the morning.</li>
+                    <li><strong>Protein in Every Meal:</strong> Use paneer, tofu, lentils (dal), chickpeas (chana), kidney beans (rajma), Greek yogurt, and sattu.</li>
+                    <li><strong>Cut Out "White" Foods:</strong> No sugar, white flour (maida), or fried foods.</li>
+                    <li><strong>Embrace Fiber:</strong> Eat a large salad with lunch and dinner to stay full.</li>
+                    <li><strong>Smart Carbs:</strong> Choose wholewheat roti, brown rice, or quinoa over white rice.</li>
+                </ul>
+            </div>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Sample Meal Structure</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card">
+                    <div class="meal-card-header" data-target="meal-1-content">
+                        <h3 class="text-xl font-semibold text-blue-700">Meal 1: Breakfast (~7:30 AM)</h3>
+                        <span class="text-xl font-bold">+</span>
+                    </div>
+                    <div id="meal-1-content" class="pt-4 space-y-3 hidden">
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 1: "Natural" Protein Shake</h4>
+                            <p class="text-gray-600 text-sm">1 cup thick curd, 2-3 tbsp Sattu, 1 tbsp chia seeds, 1/2 banana, Water/Milk.</p>
+                        </div>
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 2: Solid Meal</h4>
+                            <p class="text-gray-600 text-sm">2-3 Moong Dal Chillas or 1 bowl Poha/Upma (with peanuts & peas).</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Option 3: Simple</h4>
+                            <p class="text-gray-600 text-sm">1 bowl sprouts salad and 1 glass salted lassi/buttermilk.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="meal-card-header" data-target="meal-2-content">
+                        <h3 class="text-xl font-semibold text-blue-700">Meal 2: Lunch (~1:00 PM)</h3>
+                        <span class="text-xl font-bold">+</span>
+                    </div>
+                    <div id="meal-2-content" class="pt-4 space-y-3 hidden">
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 1: Classic</h4>
+                            <p class="text-gray-600 text-sm">1 large bowl Dal (Rajma/Chana), 1 small bowl Brown Rice (or 2 Rotis), 1 large bowl salad.</p>
+                        </div>
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 2: Paneer/Tofu</h4>
+                            <p class="text-gray-600 text-sm">100-150g Paneer/Tofu Bhurji, 2 wholewheat Rotis, Side of curd.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Option 3: Salad Meal</h4>
+                            <p class="text-gray-600 text-sm">Large "Buddha Bowl" (chickpeas, quinoa, roasted vegetables).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="meal-card-header" data-target="meal-3-content">
+                        <h3 class="text-xl font-semibold text-blue-700">Snack (~5:00 PM)</h3>
+                        <span class="text-xl font-bold">+</span>
+                    </div>
+                    <div id="meal-3-content" class="pt-4 space-y-3 hidden">
+                        <p class="text-gray-600">This fuels you between lunch and your pre-workout dinner.</p>
+                        <ul class="list-disc list-inside text-gray-600">
+                            <li>An apple or banana</li>
+                            <li>A handful of roasted chana</li>
+                            <li>1 glass of buttermilk (chaas)</li>
+                            <li>A handful of almonds (15-20)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="meal-card-header" data-target="meal-4-content">
+                        <h3 class="text-xl font-semibold text-blue-700">Meal 3: Dinner (~7:30 PM)</h3>
+                        <span class="text-xl font-bold">+</span>
+                    </div>
+                    <div id="meal-4-content" class="pt-4 space-y-3 hidden">
+                        <p class="text-gray-600">This is your main pre-workout meal (eat 60-90 mins before).</p>
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 1: High Protein</h4>
+                            <p class="text-gray-600 text-sm">150g Paneer Tikka with sautéed vegetables and 1 large green salad.</p>
+                        </div>
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 2: Lentil Focus</h4>
+                            <p class="text-gray-600 text-sm">1 large bowl thick Dal/Sambar, 1 small bowl rice OR 1 Roti.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Option 3: Soy</h4>
+                            <p class="text-gray-600 text-sm">Soy Chunk (Nutrela) curry with 1-2 wholewheat Rotis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card md:col-span-2">
+                    <div class="meal-card-header" data-target="meal-5-content">
+                        <h3 class="text-xl font-semibold text-blue-700">Meal 4: Post-Workout Recovery (~10:15 PM)</h3>
+                        <span class="text-xl font-bold">+</span>
+                    </div>
+                    <div id="meal-5-content" class="pt-4 space-y-3 hidden">
+                        <p class="text-gray-700 font-semibold">Do not skip this. It should be light but high in protein.</p>
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 1: Best Choice</h4>
+                            <p class="text-gray-600 text-sm">The "Natural" Protein Shake (Sattu, curd, etc.) - fast-digesting.</p>
+                        </div>
+                        <div class="border-b pb-2">
+                            <h4 class="font-semibold text-gray-800">Option 2: Simple</h4>
+                            <p class="text-gray-600 text-sm">1 glass of milk + 1 banana.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Option 3: Light</h4>
+                            <p class="text-gray-600 text-sm">100g Paneer (lightly salted) or a small bowl of curd.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================
+             WORKOUT PLAN PAGE
+        ======================== -->
+        <section class="page-section" id="workout-page">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Pillar 2: The 5-Day Workout Plan</h1>
+                <p class="text-lg text-gray-600">Here is your 5-day training split. Select a day to see the full list of exercises, sets, and reps. Remember to warm up, cool down, and focus on progressive overload.</p>
+            </div>
+            
+            <div class="card mb-6">
+                <h2 class="text-2xl font-semibold text-blue-700 mb-4">Your 80-Minute Session</h2>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><strong>Warm-up (10 min):</strong> 5 min light jog/incline walk + 5 min dynamic stretches.</li>
+                    <li><strong>Resistance Training (45-50 min):</strong> The core of your workout.</li>
+                    <li><strong>Cardio (20 min):</strong> High-Intensity or Steady State.</li>
+                    <li><strong>Cooldown (5 min):</strong> Static stretching (hold stretches for 20-30 seconds).</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1 border-r-0 md:border-r md:pr-4 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3">Select Workout</h3>
+                        <div class="space-y-2">
+                            <button class="workout-btn" data-workout="push">Day 1: Push</button>
+                            <button class="workout-btn" data-workout="pull">Day 2: Pull</button>
+                            <button class="workout-btn" data-workout="legs">Day 3: Legs</button>
+                            <button class="workout-btn" data-workout="upper">Day 4: Upper Body</button>
+                            <button class="workout-btn" data-workout="full">Day 5: Full Body</button>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <h3 class="text-2xl font-semibold text-blue-700 mb-4" id="workout-title">Select a workout to see details</h3>
+                        <div id="workout-details" class="text-gray-700 space-y-3">
+                            <p class="text-gray-500">Click a button on the left.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================
+             GOALS & SCHEDULE PAGE
+        ======================== -->
+        <section class="page-section" id="goals-page">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Pillar 3: Goals, Schedule & Sleep</h1>
+                <p class="text-lg text-gray-600">This section covers your primary goal, realistic outlook, and sleep schedule. The chart below visualizes your 8-week weight loss target.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card">
+                    <h2 class="text-2xl font-semibold text-blue-700 mb-4">Your 8-Week Goal: 90kg to ~80kg</h2>
+                    <div class="chart-container">
+                        <canvas id="goal-chart"></canvas>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2 text-center">Log your weight on the "Tracker" page to see your progress here!</p>
+                </div>
+                <div class="card">
+                    <h2 class="text-2xl font-semibold text-blue-700 mb-4">Sleep & Schedule</h2>
+                    <p class="text-gray-700 mb-3">Poor sleep = bad recovery, more hunger, and no energy.</p>
+                    <h3 class="text-lg font-semibold text-gray-800">Your Goal: 7.5-8 hours</h3>
+                    <p class="text-gray-700 mb-4">You must be in bed by 11:30 PM to wake up at 7:00 AM.</p>
+                    
+                    <h3 class="text-lg font-semibold text-gray-800">Sleep Hygiene</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 mb-4">
+                        <li>No phone/laptop/TV for 30-60 minutes before bed.</li>
+                        <li>Read a book.</li>
+                        <li>Make your room dark and cool.</li>
+                        <li>Try to wake up and sleep at the same time every day.</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-800">Sample Schedule (Long Day)</h3>
+                    <ul class="space-y-1 text-gray-600 text-sm">
+                        <li><strong>7:00 AM:</strong> Wake up. Drink 1L water.</li>
+                        <li><strong>7:30 AM:</strong> Breakfast.</li>
+                        <li><strong>8:30 AM - 4:00 PM:</strong> College.</li>
+                        <li><strong>1:00 PM:</strong> Lunch (Packed).</li>
+                        <li><strong>5:00 PM:</strong> Snack.</li>
+                        <li><strong>5:30 PM - 7:30 PM:</strong> Study / Relax.</li>
+                        <li><strong>7:30 PM:</strong> Dinner (Pre-Workout).</li>
+                        <li><strong>8:30 PM - 9:50 PM:</strong> Workout.</li>
+                        <li><strong>10:15 PM:</strong> Post-Workout Recovery.</li>
+                        <li><strong>11:30 PM:</strong> In bed. Sleep.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- App Data (Static) ---
+            const appData = {
+                workouts: {
+                    push: {
+                        title: 'Day 1: Push (Chest, Shoulders, Triceps)',
+                        exercises: [
+                            'Barbell Bench Press: 3 sets of 8-12 reps',
+                            'Incline Dumbbell Press: 3 sets of 10-15 reps',
+                            'Dumbbell Shoulder Press: 3 sets of 8-12 reps',
+                            'Dumbbell Lateral Raises: 3 sets of 12-15 reps',
+                            'Tricep Pushdowns (Cable): 3 sets of 12-15 reps',
+                            'Overhead Dumbbell Extension: 2 sets of 12-15 reps',
+                            'Cardio: 20 min Treadmill (HIIT)'
+                        ]
+                    },
+                    pull: {
+                        title: 'Day 2: Pull (Back, Biceps)',
+                        exercises: [
+                            'Lat Pulldown: 3 sets of 10-15 reps',
+                            'Seated Cable Row: 3 sets of 10-15 reps',
+                            'Bent-Over Dumbbell Row: 3 sets of 10-12 reps (each arm)',
+                            'Face Pulls (Cable): 3 sets of 15-20 reps',
+                            'Dumbbell Bicep Curls: 3 sets of 10-15 reps',
+                            'Hammer Curls: 2 sets of 12-15 reps',
+                            'Cardio: 20 min Elliptical (Steady)'
+                        ]
+                    },
+                    legs: {
+                        title: 'Day 3: Legs (Quads, Hamstrings, Glutes, Calves)',
+                        exercises: [
+                            'Barbell Squats: 4 sets of 8-12 reps',
+                            'Romanian Deadlifts (RDLs): 3 sets of 10-15 reps',
+                            'Leg Press: 3 sets of 12-20 reps',
+                            'Leg Extensions: 3 sets of 15-20 reps',
+                            'Leg Curls: 3 sets of 15-20 reps',
+                            'Calf Raises: 4 sets of 15-25 reps',
+                            'Cardio: 20 min Cycle (HIIT)'
+                        ]
+                    },
+                    upper: {
+                        title: 'Day 4: Upper Body (Compound Focus)',
+                        exercises: [
+                            'Incline Dumbbell Press: 3 sets of 10-12 reps',
+                            'Lat Pulldown: 3 sets of 10-12 reps',
+                            'Seated Dumbbell Shoulder Press: 3 sets of 10-12 reps',
+                            'Seated Cable Row: 3 sets of 12-15 reps',
+                            'Dumbbell Lateral Raises: 2 sets of 15-20 reps',
+                            '(Superset) Bicep Curls with Tricep Pushdowns: 3 sets of 12-15 reps',
+                            'Cardio: 20 min Treadmill (Incline Walk)'
+                        ]
+                    },
+                    full: {
+                        title: 'Day 5: Full Body (Athletic Focus)',
+                        exercises: [
+                            'Dumbbell Squat to Press: 3 sets of 12-15 reps',
+                            'Dumbbell Renegade Rows: 3 sets of 8-10 reps (each arm)',
+                            'Push-ups: 3 sets to failure',
+                            'Walking Lunges: 3 sets of 10-12 reps (each leg)',
+                            'Plank: 3 sets, hold for 60 seconds',
+                            'Cardio: 20 min StairMaster'
+                        ]
+                    },
+                    rest: {
+                        title: 'Rest Day',
+                        exercises: [
+                            'Today is your rest day. Focus on hydration, good nutrition, and sleep.',
+                            'Light activity like walking is fine.'
+                        ]
+                    }
+                },
+                schedules: {
+                    sun: {
+                        workout: 'full',
+                        schedule: [
+                            { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' },
+                            { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake (Sattu, curd, chia, banana).<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' },
+                            { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji, 2 Rotis.<br><u>Opt 3:</u> Large "Buddha Bowl".' },
+                            { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' },
+                            { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry &amp; 1-2 Rotis.' },
+                            { time: '8:15 PM', text: 'Leave for the gym.' },
+                            { time: '8:30 PM - 9:50 PM', text: '<strong>Workout: Day 5 - Full Body</strong>' },
+                            { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer or small bowl curd.' },
+                            { time: '11:30 PM', text: 'In bed. Sleep. (Try to maintain sleep schedule on weekends)' }
+                        ]
+                    },
+                    mon: {
+                        workout: 'push',
+                        schedule: [
+                            { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' },
+                            { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake (Sattu, curd, chia, banana).<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' },
+                            { time: '8:00 AM', text: 'Get ready, leave for college.' },
+                            { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' },
+                            { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji, 2 Rotis.<br><u>Opt 3:</u> Large "Buddha Bowl".' },
+                            { time: '2:30 PM', text: 'Arrive home.' },
+                            { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' },
+                            { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' },
+                            { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry &amp; 1-2 Rotis.' },
+                            { time: '8:15 PM', text: 'Leave for the gym.' },
+                            { time: '8:30 PM - 9:50 PM', text: '<strong>Workout: Day 1 - Push</strong>' },
+                            { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer or small bowl curd.' },
+                            { time: '10:30 PM - 11:00 PM', text: 'Shower, wind down.' },
+                            { time: '11:30 PM', text: 'In bed. Sleep.' }
+                        ]
+                    },
+                    tue: {
+                        workout: 'pull',
+                        schedule: [
+                            { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' },
+                            { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake (Sattu, curd, chia, banana).<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' },
+                            { time: '8:00 AM', text: 'Get ready, leave for college.' },
+                            { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' },
+                            { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji, 2 Rotis.<br><u>Opt 3:</u> Large "Buddha Bowl".' },
+                            { time: '2:30 PM', text: 'Arrive home.' },
+                            { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' },
+                            { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' },
+                            { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry &amp; 1-2 Rotis.' },
+                            { time: '8:15 PM', text: 'Leave for the gym.' },
+                            { time: '8:30 PM - 9:50 PM', text: '<strong>Workout: Day 2 - Pull</strong>' },
+                            { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer or small bowl curd.' },
+                            { time: '10:30 PM - 11:00 PM', text: 'Shower, wind down.' },
+                            { time: '11:30 PM', text: 'In bed. Sleep.' }
+                        ]
+                    },
+                    wed: {
+                        workout: 'legs',
+                        schedule: [
+                            { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' },
+                            { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake (Sattu, curd, chia, banana).<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' },
+                            { time: '8:00 AM', text: 'Get ready, leave for college.' },
+                            { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' },
+                            { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji, 2 Rotis.<br><u>Opt 3:</u> Large "Buddha Bowl".' },
+                            { time: '4:45 PM', text: 'Arrive home.' },
+                            { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' },
+                            { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' },
+                            { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry &amp; 1-2 Rotis.' },
+                            { time: '8:15 PM', text: 'Leave for the gym.' },
+                            { time: '8:30 PM - 9:50 PM', text: '<strong>Workout: Day 3 - Legs</strong>' },
+                            { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer or small bowl curd.' },
+                            { time: '10:30 PM - 11:00 PM', text: 'Shower, wind down.' },
+                            { time: '11:30 PM', text: 'In bed. Sleep.' }
+                        ]
+                    },
+                    thu: {
+                        workout: 'upper',
+                        schedule: [
+                            { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' },
+                            { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake (Sattu, curd, chia, banana).<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' },
+                            { time: '8:00 AM', text: 'Get ready, leave for college.' },
+                            { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' },
+                            { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji, 2 Rotis.<br><u>Opt 3:</u> Large "Buddha Bowl".' },
+                            { time: '4:45 PM', text: 'Arrive home.' },
+                            { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' },
+                            { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' },
+                            { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry &amp; 1-2 Rotis.' },
+                            { time: '8:15 PM', text: 'Leave for the gym.' },
+                            { time: '8:30 PM - 9:50 PM', text: '<strong>Workout: Day 4 - Upper Body</strong>' },
+                            { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer or small bowl curd.' },
+                            { time: '10:30 PM - 11:00 PM', text: 'Shower, wind down.' },
+                            { time: '11:30 PM', text: 'In bed. Sleep.' }
+                        ]
+                    },
+                    fri: {
+                        workout: 'rest',
+                        schedule: [
+                            { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' },
+                            { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake (Sattu, curd, chia, banana).<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' },
+                            { time: '8:00 AM', text: 'Get ready, leave for college.' },
+                            { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' },
+                            { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji, 2 Rotis.<br><u>Opt 3:</u> Large "Buddha Bowl".' },
+                            { time: '4:45 PM', text: 'Arrive home.' },
+                            { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' },
+                            { time: 'Evening', text: '<strong>REST DAY.</strong> No gym. Focus on diet, hydration, and sleep. Use the evening to relax or study.' },
+                            { time: '11:30 PM', text: 'In bed. Sleep.' }
+                        ]
+                    },
+                    sat: {
+                        workout: 'rest',
+                        schedule: [
+                            { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' },
+                            { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake (Sattu, curd, chia, banana).<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' },
+                            { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji, 2 Rotis.<br><u>Opt 3:</u> Large "Buddha Bowl".' },
+                            { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' },
+                            { time: 'Evening', text: '<strong>MANDATORY REST DAY.</strong> No gym. Focus on diet and hydration. This is a good day to meal prep (e.g., boil chickpeas, lentils) for the week ahead.' },
+                            { time: '11:30 PM', text: 'In bed. Sleep.' }
+                        ]
+                    }
+                }
+            };
+
+            // --- Global Variables ---
+            let goalChart;
+            let weightHistory = JSON.parse(localStorage.getItem('weightHistory')) || [];
+            let waterData = JSON.parse(localStorage.getItem('waterData')) || { count: 0, date: new Date().toDateString() };
+            let completedWorkouts = JSON.parse(localStorage.getItem('completedWorkouts')) || [];
+            
+            // --- Page Navigation ---
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const pages = document.querySelectorAll('.page-section');
+
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-target');
+                    
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                        if (page.id === targetId) {
+                            page.classList.add('active');
+                        }
+                    });
+
+                    if (targetId === 'tracker-page' || targetId === 'goals-page') {
+                        updateGoalChart();
+                    }
+                    if (targetId === 'tracker-page') {
+                        renderWeightHistory();
+                        renderCalendar();
+                    }
+                });
+            });
+
+            // --- Dashboard Logic ---
+            const dayButtons = document.querySelectorAll('.day-btn');
+            const dashboardWorkout = document.getElementById('dashboard-workout');
+            const dashboardSchedule = document.getElementById('dashboard-schedule');
+            const workoutCompleteContainer = document.getElementById('workout-complete-container');
+
+            dayButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const day = btn.getAttribute('data-day');
+                    
+                    dayButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const scheduleData = appData.schedules[day];
+                    const workoutData = appData.workouts[scheduleData.workout];
+                    
+                    dashboardWorkout.innerHTML = `<h3 class="text-xl font-semibold text-gray-800 mb-3">${workoutData.title}</h3>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                            ${workoutData.exercises.map(ex => `<li>${ex}</li>`).join('')}
+                        </ul>`;
+                    
+                    let scheduleHtml = '<div class="space-y-4">';
+                    scheduleData.schedule.forEach(item => {
+                        scheduleHtml += `
+                            <div class="flex">
+                                <div class="w-24 text-sm font-medium text-gray-600">${item.time}</div>
+                                <div class="flex-1 text-sm text-gray-800">${item.text}</div>
+                            </div>
+                        `;
+                    });
+                    scheduleHtml += '</div>';
+                    dashboardSchedule.innerHTML = scheduleHtml;
+
+                    updateWorkoutCompleteButton(scheduleData.workout !== 'rest');
+                });
+            });
+
+            const today = new Date().getDay();
+            const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+            const todayBtn = document.querySelector(`.day-btn[data-day="${dayMap[today]}"]`);
+            if(todayBtn) {
+                todayBtn.click();
+                todayBtn.classList.add('font-bold');
+            }
+
+            // --- Workout Complete Logic ---
+            function updateWorkoutCompleteButton(isWorkoutDay) {
+                const todayStr = new Date().toDateString();
+                const isCompleted = completedWorkouts.includes(todayStr);
+                
+                if (!isWorkoutDay) {
+                    workoutCompleteContainer.innerHTML = '<p class="text-center text-gray-500 font-medium p-3 bg-gray-100 rounded-lg">Today is a Rest Day!</p>';
+                    return;
+                }
+
+                if (isCompleted) {
+                    workoutCompleteContainer.innerHTML = '<p class="text-center text-green-600 font-medium p-3 bg-green-100 rounded-lg">Workout Completed Today!</p>';
+                } else {
+                    workoutCompleteContainer.innerHTML = '<button id="complete-workout-btn" class="w-full bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600">Mark Workout as Complete</button>';
+                    document.getElementById('complete-workout-btn').addEventListener('click', () => {
+                        const todayStr = new Date().toDateString();
+                        if (!completedWorkouts.includes(todayStr)) {
+                            completedWorkouts.push(todayStr);
+                            localStorage.setItem('completedWorkouts', JSON.stringify(completedWorkouts));
+                        }
+                        updateWorkoutCompleteButton(true);
+                    });
+                }
+            }
+
+            // --- Water Tracker Logic ---
+            const waterCountEl = document.getElementById('water-count');
+            const waterPlusBtn = document.getElementById('water-plus-btn');
+            const waterMinusBtn = document.getElementById('water-minus-btn');
+
+            function updateWaterTracker() {
+                const todayStr = new Date().toDateString();
+                if (waterData.date !== todayStr) {
+                    waterData.count = 0;
+                    waterData.date = todayStr;
+                }
+                waterCountEl.textContent = waterData.count;
+                localStorage.setItem('waterData', JSON.stringify(waterData));
+            }
+
+            waterPlusBtn.addEventListener('click', () => {
+                if (waterData.count < 99) {
+                    waterData.count++;
+                    updateWaterTracker();
+                }
+            });
+
+            waterMinusBtn.addEventListener('click', () => {
+                if (waterData.count > 0) {
+                    waterData.count--;
+                    updateWaterTracker();
+                }
+            });
+
+            // --- Diet Page Logic ---
+            const mealCardHeaders = document.querySelectorAll('.meal-card-header');
+            mealCardHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const targetId = header.getAttribute('data-target');
+                    const content = document.getElementById(targetId);
+                    content.classList.toggle('hidden');
+                    header.querySelector('span').textContent = content.classList.contains('hidden') ? '+' : '−';
+                });
+            });
+
+            // --- Workout Page Logic ---
+            const workoutButtons = document.querySelectorAll('.workout-btn');
+            const workoutTitle = document.getElementById('workout-title');
+            const workoutDetails = document.getElementById('workout-details');
+
+            workoutButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const workoutKey = btn.getAttribute('data-workout');
+                    
+                    workoutButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const workoutData = appData.workouts[workoutKey];
+                    
+                    workoutTitle.textContent = workoutData.title;
+                    workoutDetails.innerHTML = `<ul class="list-disc list-inside space-y-2">
+                        ${workoutData.exercises.map(ex => `<li>${ex}</li>`).join('')}
+                    </ul>`;
+                });
+            });
+
+            // --- Tracker Page Logic ---
+            const weightInput = document.getElementById('weight-input');
+            const logWeightBtn = document.getElementById('log-weight-btn');
+            const weightHistoryTable = document.getElementById('weight-history-table');
+            const calendarGrid = document.getElementById('consistency-calendar');
+
+            logWeightBtn.addEventListener('click', () => {
+                const weight = parseFloat(weightInput.value);
+                if (weight > 0) {
+                    const todayStr = new Date().toDateString();
+                    const newEntry = { date: todayStr, weight: weight };
+                    
+                    const existingEntryIndex = weightHistory.findIndex(e => e.date === todayStr);
+                    if (existingEntryIndex > -1) {
+                        weightHistory[existingEntryIndex] = newEntry;
+                    } else {
+                        weightHistory.push(newEntry);
+                    }
+                    
+                    weightHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    localStorage.setItem('weightHistory', JSON.stringify(weightHistory));
+                    
+                    renderWeightHistory();
+                    updateGoalChart();
+                    weightInput.value = '';
+                }
+            });
+
+            function renderWeightHistory() {
+                weightHistoryTable.innerHTML = '';
+                if (weightHistory.length === 0) {
+                    weightHistoryTable.innerHTML = '<tr><td colspan="2" class="text-center text-gray-500 py-4">No weight logged yet.</td></tr>';
+                    return;
+                }
+                weightHistory.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b';
+                    row.innerHTML = `
+                        <td class="py-2 px-4 text-sm text-gray-700">${entry.date}</td>
+                        <td class="py-2 px-4 text-sm text-gray-800 font-medium">${entry.weight} kg</td>
+                    `;
+                    weightHistoryTable.appendChild(row);
+                });
+            }
+
+            function renderCalendar() {
+                calendarGrid.innerHTML = '';
+                const totalDays = 8 * 7;
+                
+                const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+                weekDays.forEach(day => {
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'flex items-center justify-center text-xs font-semibold text-gray-500';
+                    dayEl.textContent = day;
+                    calendarGrid.appendChild(dayEl);
+                });
+
+                const startDate = new Date(new Date().setDate(new Date().getDate() - 3));
+                
+                for (let i = 0; i < totalDays; i++) {
+                    const day = new Date(startDate);
+                    day.setDate(day.getDate() + i);
+                    
+                    const dayEl = document.createElement('div');
+                    dayEl.textContent = day.getDate();
+                    
+                    const dayStr = day.toDateString();
+                    const isCompleted = completedWorkouts.includes(dayStr);
+                    
+                    dayEl.className = 'calendar-day';
+                    if (isCompleted) {
+                        dayEl.classList.add('completed');
+                    }
+                    calendarGrid.appendChild(dayEl);
+                }
+            }
+            
+            // --- Goal Chart Logic ---
+            function updateGoalChart() {
+                const ctx = document.getElementById('goal-chart').getContext('2d');
+                
+                const labels = ['Week 0', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'];
+                
+                let progressData = new Array(labels.length).fill(null);
+                if (weightHistory.length > 0) {
+                    const startDate = new Date(weightHistory[weightHistory.length - 1].date);
+                    progressData[0] = weightHistory[weightHistory.length - 1].weight;
+
+                    weightHistory.forEach(entry => {
+                        const entryDate = new Date(entry.date);
+                        const diffTime = Math.abs(entryDate - startDate);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        const week = Math.floor(diffDays / 7);
+                        if(week < labels.length) {
+                             progressData[week] = entry.weight;
+                        }
+                    });
+                }
+                
+                const datasets = [
+                    {
+                        label: 'Realistic Goal (-1.25kg/wk)',
+                        data: [90, 88.75, 87.5, 86.25, 85, 83.75, 82.5, 81.25, 80],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Ambitious Goal (-1.875kg/wk)',
+                        data: [90, 88.125, 86.25, 84.375, 82.5, 80.625, 78.75, 76.875, 75],
+                        borderColor: 'rgb(234, 88, 12)',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        borderDash: [5, 5]
+                    },
+                    {
+                        label: 'Your Progress',
+                        data: progressData,
+                        borderColor: 'rgb(22, 163, 74)',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        borderWidth: 3
+                    }
+                ];
+
+                if (goalChart) {
+                    goalChart.data.labels = labels;
+                    goalChart.data.datasets = datasets;
+                    goalChart.update();
+                } else {
+                    goalChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Weight (kg)'
+                                    },
+                                    min: 74,
+                                    max: 91
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Time (Weeks)'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `${context.dataset.label}: ${context.parsed.y} kg`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // --- Initial App Load ---
+            updateWaterTracker();
+            updateGoalChart();
+        });
+    </script>
+</body>
+</html>

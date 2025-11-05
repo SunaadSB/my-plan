@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <!-- Chosen Palette: Refined Indigo (Gray-50, White, Gray-900, Indigo-600 Accent) -->
-    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'diet' ('veg'/'nonVeg') which dynamically repopulates the 'Diet Plan' page and the 'Dashboard' schedule. This personalizes all three pillars: Workouts, Goals, and Diet. -->
-    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile goal selection changes data source for workout UI -> Justification: Personalizes the entire workout plan -> Library: Vanilla JS. | Report Info: User-defined Diet -> Goal: Inform -> Viz: Dynamic Text/Card List -> Interaction: Profile diet selection changes data source for diet UI -> Justification: Personalizes the entire diet plan -> Library: Vanilla JS. -->
+    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'goal', 'diet', and 'frequency' (days per week). This 3-factor system dynamically selects from a matrix of 9 unique, phased workout plans, making all pillars (Workout, Diet, Goals) fully personalized. -->
+    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal + Frequency -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile selections change data source from a 9-plan matrix -> Justification: Fully personalizes the workout plan -> Library: Vanilla JS. | Report Info: User-defined Diet -> Goal: Inform -> Viz: Dynamic Text/Card List -> Interaction: Profile diet selection changes data source for diet UI -> Justification: Personalizes the entire diet plan -> Library: Vanilla JS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -30,7 +30,7 @@
         }
         .card {
             /* Increased internal padding */
-            @apply bg-white shadow-md rounded-lg p-8 overflow-hidden;
+            @apply bg-white shadow-md rounded-lg p-8 md:p-10 overflow-hidden;
         }
         .day-btn {
             @apply px-4 py-2 rounded-md text-sm font-medium text-gray-600 bg-white shadow-sm border border-gray-200 hover:bg-gray-100 transition-colors duration-150 flex-1;
@@ -79,7 +79,7 @@
             @apply bg-white rounded-lg shadow-2xl p-8 max-w-lg w-full;
         }
         .goal-choice-btn {
-            @apply w-full text-left p-4 border border-gray-300 rounded-md hover:bg-indigo-50 cursor-pointer;
+            @apply w-full text-left p-4 border border-gray-300 rounded-md hover:bg-indigo-50 cursor-pointer transition-colors duration-150;
         }
         /* NEW: More prominent active state for preference buttons */
         .goal-choice-btn.active {
@@ -126,18 +126,18 @@
     </header>
 
     <!-- Increased main padding -->
-    <main class="container mx-auto p-6 md:p-10">
+    <main class="container mx-auto p-6 md:p-12">
 
         <!-- =======================
              DASHBOARD PAGE
         ======================== -->
         <section class="page-section active" id="dashboard-page">
-            <div class="mb-8"> <!-- Increased margin -->
+            <div class="mb-10"> <!-- Increased margin -->
                 <h1 id="dashboard-title" class="text-3xl font-extrabold text-gray-900 mb-2">Welcome!</h1>
                 <p class="text-lg text-gray-600">Use this dashboard to see your workout and full daily schedule. Select a day to get started.</p>
             </div>
 
-            <div class="mb-8"> <!-- Increased margin -->
+            <div class="mb-10"> <!-- Increased margin -->
                 <div class="flex flex-wrap gap-2">
                     <button class="day-btn" data-day="sun">Sun</button>
                     <button class="day-btn" data-day="mon">Mon</button>
@@ -150,12 +150,12 @@
             </div>
             
             <!-- Increased gap -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="flex flex-col gap-8"> <!-- Increased gap -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="flex flex-col gap-10"> <!-- Increased gap -->
                     <div class="card">
                         <h2 class="text-xl font-bold text-indigo-700 mb-2">Today's Workout</h2>
                         <!-- NEW: Subtitle for active plan -->
-                        <p id="dashboard-workout-subtitle" class="text-sm text-gray-500 mb-4">Loading plan...</p>
+                        <p id="dashboard-workout-subtitle" class="text-sm text-gray-500 mb-6">Loading plan...</p>
                         <div id="dashboard-workout">
                             <p class="text-gray-500">Select a day above to see your plan.</p>
                         </div>
@@ -187,12 +187,12 @@
              TRACKER PAGE
         ======================== -->
         <section class="page-section" id="tracker-page">
-            <div class="mb-8"> <!-- Increased margin -->
+            <div class="mb-10"> <!-- Increased margin -->
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">My Progress Tracker</h1>
                 <p class="text-lg text-gray-600">Log your weight to see your progress plotted on the chart and review your workout consistency.</p>
             </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8"> <!-- Increased gap -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10"> <!-- Increased gap -->
                 <div class="card">
                     <h2 class="text-xl font-bold text-indigo-700 mb-6">Log Your Weight</h2>
                     <div class="flex space-x-2">
@@ -230,12 +230,12 @@
              DIET PLAN PAGE
         ======================== -->
         <section class="page-section" id="diet-page">
-             <div class="mb-8"> <!-- Increased margin -->
+             <div class="mb-10"> <!-- Increased margin -->
                 <h1 id="diet-plan-title" class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 1: Your Diet Plan</h1>
                 <p id="diet-plan-description" class="text-lg text-gray-600">This plan is based on your profile. Explore the core principles and all meal options here.</p>
             </div>
 
-            <div class="card mb-8"> <!-- Increased margin -->
+            <div class="card mb-10"> <!-- Increased margin -->
                 <h2 class="text-xl font-bold text-indigo-700 mb-6">Core Dietary Principles</h2>
                 <ul class="list-disc list-inside space-y-3 text-gray-700"> <!-- Increased spacing -->
                     <li><strong>Water is Your Best Friend:</strong> Drink 3-4 liters per day. Start with a liter first thing in the morning.</li>
@@ -247,7 +247,7 @@
             </div>
 
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Sample Meal Structure</h2>
-            <div id="diet-plan-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-8"> <!-- Increased gap -->
+            <div id="diet-plan-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-10"> <!-- Increased gap -->
                 <!-- Meal cards will be built by JS -->
             </div>
         </section>
@@ -256,12 +256,12 @@
              WORKOUT PLAN PAGE
         ======================== -->
         <section class="page-section" id="workout-page">
-            <div class="mb-8"> <!-- Increased margin -->
+            <div class="mb-10"> <!-- Increased margin -->
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 2: Your Personalized Workout Plan</h1>
                 <p class="text-lg text-gray-600">This plan is dynamically generated based on the "Primary Goal" you set in your profile.</p>
             </div>
             
-            <div class="card mb-8"> <!-- Increased margin -->
+            <div class="card mb-10"> <!-- Increased margin -->
                 <h2 class="text-xl font-bold text-indigo-700 mb-6">Your 80-Minute Session</h2>
                 <ul class="list-disc list-inside space-y-3 text-gray-700"> <!-- Increased spacing -->
                     <li><strong>Warm-up (10 min):</strong> 5 min light jog/incline walk + 5 min dynamic stretches.</li>
@@ -274,9 +274,10 @@
             <div class="card">
                 <h2 class="text-xl font-bold text-indigo-700 mb-2" id="workout-plan-title">Your Workout Plan</h2>
                 <!-- NEW: Subtitle for active plan -->
-                <p id="workout-plan-description" class="text-lg text-gray-600 mb-6">Set your goal on the Profile page to see your plan.</p>
-                <div class="space-y-6" id="workout-plan-container">
-                    <!-- Workout plan will be dynamically injected here -->
+                <p id="workout-plan-description" class="text-lg text-gray-600 mb-8">Set your goal on the Profile page to see your plan.</p>
+                <!-- NEW: Container for PHASES -->
+                <div class="space-y-10" id="workout-plan-container">
+                    <!-- Workout plan phases will be dynamically injected here -->
                 </div>
             </div>
         </section>
@@ -285,12 +286,12 @@
              GOALS & SCHEDULE PAGE
         ======================== -->
         <section class="page-section" id="goals-page">
-            <div class="mb-8"> <!-- Increased margin -->
+            <div class="mb-10"> <!-- Increased margin -->
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 3: Goals, Schedule & Sleep</h1>
                 <p class="text-lg text-gray-600">This section covers your primary goal, realistic outlook, and sleep schedule. The chart below visualizes your weight loss target based on your profile.</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8"> <!-- Increased gap -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10"> <!-- Increased gap -->
                 <div class="card">
                     <h2 class="text-xl font-bold text-indigo-700 mb-6" id="goal-chart-title">Your Goal Chart</h2>
                     <div class="chart-container">
@@ -335,13 +336,13 @@
              PROFILE PAGE
         ======================== -->
         <section class="page-section" id="profile-page">
-            <div class="mb-8"> <!-- Increased margin -->
+            <div class="mb-10"> <!-- Increased margin -->
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">My Profile</h1>
                 <p class="text-lg text-gray-600">This information is saved locally on your device and personalizes the app for you.</p>
             </div>
 
             <div class="card max-w-2xl mx-auto">
-                <div class="space-y-6">
+                <div class="space-y-8"> <!-- Increased spacing -->
                     <div>
                         <label for="profile-name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
                         <input type="text" id="profile-name" class="input-field" placeholder="Enter your name">
@@ -381,6 +382,31 @@
                                         <span class="font-semibold text-gray-800">Non-Vegetarian</span>
                                         <p class="text-sm text-gray-600">Eggs, Chicken, Fish, Lentils</p>
                                     </div>
+                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- NEW: Workout Frequency -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">How many days per week can you train?</label>
+                        <div class="flex flex-col sm:flex-row gap-4" id="frequency-choices">
+                            <button class="goal-choice-btn flex-1" data-frequency="3day">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-gray-800">3 Days / Week</span>
+                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
+                                </div>
+                            </button>
+                             <button class="goal-choice-btn flex-1" data-frequency="4day">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-gray-800">4 Days / Week</span>
+                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
+                                </div>
+                            </button>
+                             <button class="goal-choice-btn flex-1" data-frequency="5day">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-gray-800">5 Days / Week</span>
                                     <span class="check-icon text-2xl text-indigo-600">✓</span>
                                 </div>
                             </button>
@@ -428,7 +454,7 @@
                             Reset App Data
                         </button>
                     </div>
-                    <p id="profile-saved-msg" class="text-center text-green-600 font-medium hidden">Profile Saved!</p>
+                    <p id="profile-saved-msg" class="text-center text-green-600 font-medium hidden">Profile Saved! Your app is now personalized.</p>
                 </div>
             </div>
         </section>
@@ -439,46 +465,302 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             // --- App Data (Static) ---
+            // NEW: WORKOUT PLANS ARE NOW A 3x3 MATRIX (Goal x Frequency)
             const appData = {
                 workoutPlans: {
                     fatLoss: {
-                        name: "Fat Loss Plan (5-Day)",
-                        description: "This 5-day Upper/Lower split maximizes calorie burn while building muscle.",
-                        days: [
-                            { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A", exercises: ["Bench Press: 3x8-12", "Lat Pulldown: 3x10-15", "Shoulder Press: 3x10-12", "Dumbbell Curls: 2x12-15", "Tricep Pushdowns: 2x12-15", "Cardio: 20 min HIIT Treadmill"] },
-                            { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A", exercises: ["Squats: 3x8-12", "Romanian Deadlifts: 3x10-15", "Leg Press: 3x12-15", "Calf Raises: 3x15-20", "Ab Crunches: 3x20", "Cardio: 20 min Steady Cycle"] },
-                            { day: "Day 3 (Wed)", key: "wed", title: "Active Rest", exercises: ["Cardio: 30-40 min light-moderate intensity (e.g., Incline Walk)"] },
-                            { day: "Day 4 (Thu)", key: "thu", title: "Upper Body B", exercises: ["Incline DB Press: 3x10-15", "Seated Cable Row: 3x10-15", "Lateral Raises: 3x15-20", "Hammer Curls: 2x12-15", "Overhead Extension: 2x12-15", "Cardio: 20 min HIIT Elliptical"] },
-                            { day: "Day 5 (Sun)", key: "sun", title: "Lower Body B", exercises: ["Deadlifts: 3x6-10", "Walking Lunges: 3x10-12 (each leg)", "Leg Curls: 3x15-20", "Leg Extensions: 3x15-20", "Plank: 3x60s", "Cardio: 20 min Steady StairMaster"] },
-                            { day: "Day 6 (Fri)", key: "fri", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
-                            { day: "Day 7 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
-                        ]
+                        '3day': {
+                            name: "3-Day Fat Loss Plan",
+                            description: "High-intensity full-body workouts to maximize calorie burn in 3 days.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-4)",
+                                    description: "Focus on compound movements and conditioning.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Full Body A", exercises: ["Goblet Squats: 3x10-15", "Push-ups: 3x to failure", "Dumbbell Rows: 3x10-12 (each arm)", "Plank: 3x60s", "Cardio: 20 min HIIT"] },
+                                        { day: "Day 2 (Wed)", key: "wed", title: "Full Body B", exercises: ["Romanian Deadlifts (DB): 3x12-15", "Overhead Press (DB): 3x10-15", "Lat Pulldown: 3x10-15", "Walking Lunges: 3x10 (each leg)", "Cardio: 20 min HIIT"] },
+                                        { day: "Day 3 (Fri)", key: "fri", title: "Full Body C", exercises: ["Leg Press: 3x15-20", "Incline DB Press: 3x10-15", "Seated Cable Row: 3x10-15", "Kettlebell Swings (or DB): 3x20", "Cardio: 20 min HIIT"] },
+                                        { day: "Day 4 (Tue)", key: "tue", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 5 (Thu)", key: "thu", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Intensity (Weeks 5+)",
+                                    description: "Increase metabolic stress with supersets and circuits.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Full Body A (Circuit)", exercises: ["Squat to Press (DB): 3x15", "Renegade Rows: 3x10 (each arm)", "Push-ups: 3x to failure", "Plank: 3x90s", "Cardio: 25 min HIIT"] },
+                                        { day: "Day 2 (Wed)", key: "wed", title: "Full Body B (Circuit)", exercises: ["Deadlifts (DB): 3x15", "Incline DB Press: 3x12-15", "Pull-ups (Assisted): 3x to failure", "Walking Lunges: 3x12 (each leg)", "Cardio: 25 min HIIT"] },
+                                        { day: "Day 3 (Fri)", key: "fri", title: "Full Body C (Circuit)", exercises: ["Leg Press: 3x20", "Overhead Press (DB): 3x12-15", "Lat Pulldown: 3x12-15", "Kettlebell Swings: 3x25", "Cardio: 25 min HIIT"] },
+                                        { day: "Day 4 (Tue)", key: "tue", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 5 (Thu)", key: "thu", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        },
+                        '4day': {
+                            name: "4-Day Fat Loss Plan",
+                            description: "Classic Upper/Lower split to build muscle and burn fat.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-4)",
+                                    description: "Focus on building strength and work capacity with compound lifts.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A", exercises: ["Bench Press: 3x8-12", "Lat Pulldown: 3x10-15", "Shoulder Press: 3x10-12", "Dumbbell Curls: 2x12-15", "Tricep Pushdowns: 2x12-15", "Cardio: 20 min HIIT"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A", exercises: ["Squats: 3x8-12", "Romanian Deadlifts: 3x10-15", "Leg Press: 3x12-15", "Calf Raises: 3x15-20", "Ab Crunches: 3x20", "Cardio: 20 min Steady Cycle"] },
+                                        { day: "Day 3 (Thu)", key: "thu", title: "Upper Body B", exercises: ["Incline DB Press: 3x10-15", "Seated Cable Row: 3x10-15", "Lateral Raises: 3x15-20", "Hammer Curls: 2x12-15", "Overhead Extension: 2x12-15", "Cardio: 20 min HIIT"] },
+                                        { day: "Day 4 (Fri)", key: "fri", title: "Lower Body B", exercises: ["Deadlifts: 3x6-10", "Walking Lunges: 3x10-12 (each leg)", "Leg Curls: 3x15-20", "Leg Extensions: 3x15-20", "Plank: 3x60s", "Cardio: 20 min Steady"] },
+                                        { day: "Day 5 (Wed)", key: "wed", title: "Active Rest", exercises: ["Cardio: 30-40 min light-moderate intensity (e.g., Incline Walk)"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Intensity (Weeks 5+)",
+                                    description: "Increase intensity with more volume and supersets.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A (Intensity)", exercises: ["Bench Press: 4x8-10", "Lat Pulldown: 4x10-12", "Shoulder Press: 3x10-12", "Superset: DB Curls (3x12) & Tricep Pushdowns (3x15)", "Cardio: 25 min HIIT"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A (Intensity)", exercises: ["Squats: 4x8-10", "Romanian Deadlifts: 3x10-12", "Leg Press: 4x15-20", "Calf Raises: 4x20", "Hanging Knee Raises: 3x15", "Cardio: 25 min Steady"] },
+                                        { day: "Day 3 (Thu)", key: "thu", title: "Upper Body B (Intensity)", exercises: ["Incline DB Press: 4x10-12", "Seated Cable Row: 4x10-12", "Lateral Raises: 4x15-20", "Superset: Hammer Curls (3x12) & Overhead Extension (3x15)", "Cardio: 25 min HIIT"] },
+                                        { day: "Day 4 (Fri)", key: "fri", title: "Lower Body B (Intensity)", exercises: ["Deadlifts: 4x6-8", "Walking Lunges: 3x12 (each leg)", "Leg Curls: 4x15-20", "Leg Extensions: 4x15-20", "Plank: 3x90s", "Cardio: 25 min Steady"] },
+                                        { day: "Day 5 (Wed)", key: "wed", title: "Active Rest", exercises: ["Cardio: 40 min light-moderate intensity"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        },
+                        '5day': {
+                            name: "5-Day Fat Loss Plan",
+                            description: "High-frequency Upper/Lower split to maximize weekly volume and calorie burn.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-4)",
+                                    description: "Focus on building strength and work capacity with compound lifts.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A", exercises: ["Bench Press: 3x8-12", "Lat Pulldown: 3x10-15", "Shoulder Press: 3x10-12", "Dumbbell Curls: 2x12-15", "Tricep Pushdowns: 2x12-15", "Cardio: 20 min HIIT Treadmill"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A", exercises: ["Squats: 3x8-12", "Romanian Deadlifts: 3x10-15", "Leg Press: 3x12-15", "Calf Raises: 3x15-20", "Ab Crunches: 3x20", "Cardio: 20 min Steady Cycle"] },
+                                        { day: "Day 3 (Wed)", key: "wed", title: "Upper Body B", exercises: ["Incline DB Press: 3x10-15", "Seated Cable Row: 3x10-15", "Lateral Raises: 3x15-20", "Hammer Curls: 2x12-15", "Overhead Extension: 2x12-15", "Cardio: 20 min HIIT Elliptical"] },
+                                        { day: "Day 4 (Thu)", key: "thu", title: "Lower Body B", exercises: ["Deadlifts: 3x6-10", "Walking Lunges: 3x10-12 (each leg)", "Leg Curls: 3x15-20", "Leg Extensions: 3x15-20", "Plank: 3x60s", "Cardio: 20 min Steady StairMaster"] },
+                                        { day: "Day 5 (Fri)", key: "fri", title: "Full Body / Active Rest", exercises: ["Cardio: 30-40 min light-moderate intensity (e.g., Incline Walk) or a light full-body circuit."] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Intensity (Weeks 5+)",
+                                    description: "Increase intensity with more volume, supersets, and HIIT cardio.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A (Intensity)", exercises: ["Bench Press: 4x8-10", "Lat Pulldown: 4x10-12", "Shoulder Press: 3x10-12", "Superset: DB Curls (3x12) & Tricep Pushdowns (3x15)", "Cardio: 25 min HIIT"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A (Intensity)", exercises: ["Squats: 4x8-10", "Romanian Deadlifts: 3x10-12", "Leg Press: 4x15-20", "Calf Raises: 4x20", "Hanging Knee Raises: 3x15", "Cardio: 25 min Steady"] },
+                                        { day: "Day 3 (Wed)", key: "wed", title: "Upper Body B (Intensity)", exercises: ["Incline DB Press: 4x10-12", "Seated Cable Row: 4x10-12", "Lateral Raises: 4x15-20", "Superset: Hammer Curls (3x12) & Overhead Extension (3x15)", "Cardio: 25 min HIIT"] },
+                                        { day: "Day 4 (Thu)", key: "thu", title: "Lower Body B (Intensity)", exercises: ["Deadlifts: 4x6-8", "Walking Lunges: 3x12 (each leg)", "Leg Curls: 4x15-20", "Leg Extensions: 4x15-20", "Plank: 3x90s", "Cardio: 25 min Steady"] },
+                                        { day: "Day 5 (Fri)", key: "fri", title: "Full Body Circuit", exercises: ["Goblet Squats: 3x15", "Push-ups: 3x to failure", "Dumbbell Rows: 3x12 (each arm)", "Kettlebell Swings (or DB): 3x20", "Plank: 3x90s"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        }
                     },
                     muscle: {
-                        name: "Muscle Building Plan (5-Day)",
-                        description: "This 5-day Push/Pull/Legs split is a classic for maximizing hypertrophy.",
-                        days: [
-                            { day: "Day 1 (Mon)", key: "mon", title: "Push (Chest, Shoulders, Triceps)", exercises: ["Barbell Bench Press: 4x6-10", "Incline Dumbbell Press: 3x8-12", "Dumbbell Shoulder Press: 3x8-12", "Dumbbell Lateral Raises: 3x12-15", "Tricep Pushdowns (Cable): 3x12-15", "Overhead Dumbbell Extension: 2x12-15"] },
-                            { day: "Day 2 (Tue)", key: "tue", title: "Pull (Back, Biceps)", exercises: ["Lat Pulldown: 4x8-12", "Seated Cable Row: 3x10-15", "Bent-Over Dumbbell Row: 3x10-12 (each arm)", "Face Pulls (Cable): 3x15-20", "Dumbbell Bicep Curls: 3x10-15", "Hammer Curls: 2x12-15"] },
-                            { day: "Day 3 (Wed)", key: "wed", title: "Legs (Quads, Hamstrings, Glutes)", exercises: ["Barbell Squats: 4x8-12", "Romanian Deadlifts (RDLs): 3x10-15", "Leg Press: 3x12-20", "Leg Extensions: 3x15-20", "Leg Curls: 3x15-20", "Calf Raises: 4x15-25"] },
-                            { day: "Day 4 (Thu)", key: "thu", title: "Push (Shoulder/Chest Focus)", exercises: ["Overhead Press (Barbell): 4x6-10", "Dumbbell Bench Press: 3x8-12", "Arnold Press: 3x10-15", "Cable Crossovers: 3x12-15", "Close Grip Bench Press: 3x8-12", "Single Arm Tricep Extension: 2x12-15"] },
-                            { day: "Day 5 (Sun)", key: "sun", title: "Pull (Back/Bicep Focus)", exercises: ["Pull-ups (or Assisted): 4x to failure", "T-Bar Row: 3x8-12", "Single Arm DB Row: 3x10-12", "Reverse Pec Deck: 3x15-20", "Barbell Curls: 3x10-12", "Preacher Curls: 2x12-15"] },
-                            { day: "Day 6 (Fri)", key: "fri", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
-                            { day: "Day 7 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
-                        ]
+                        '3day': {
+                            name: "3-Day Muscle Building Plan",
+                            description: "A 3-day full-body split focusing on compound lifts for hypertrophy.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-6)",
+                                    description: "Focus on learning the movements and building a consistent habit.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Full Body A (Squat Focus)", exercises: ["Barbell Squats: 4x6-10", "Dumbbell Bench Press: 3x8-12", "Dumbbell Row: 3x8-12 (each arm)", "Overhead Press: 3x8-12", "Bicep Curls: 2x12-15", "Tricep Extension: 2x12-15"] },
+                                        { day: "Day 2 (Wed)", key: "wed", title: "Full Body B (Bench Focus)", exercises: ["Barbell Bench Press: 4x6-10", "Leg Press: 3x10-15", "Lat Pulldown: 3x8-12", "Lateral Raises: 3x12-15", "Plank: 3x60s"] },
+                                        { day: "Day 3 (Fri)", key: "fri", title: "Full Body C (Deadlift Focus)", exercises: ["Deadlifts: 4x5-8", "Incline Dumbbell Press: 3x10-15", "Seated Cable Row: 3x10-15", "Walking Lunges: 3x10 (each leg)", "Hammer Curls: 2x12-15", "Tricep Pushdowns: 2x12-15"] },
+                                        { day: "Day 4 (Tue)", key: "tue", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 5 (Thu)", key: "thu", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Intensity (Weeks 7+)",
+                                    description: "Increase volume and add accessory movements.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Full Body A (Squat Focus)", exercises: ["Barbell Squats: 5x5", "Incline DB Press: 3x10-12", "Barbell Row: 3x8-10", "Arnold Press: 3x10-12", "Bicep Curls: 3x12-15", "Tricep Extension: 3x12-15"] },
+                                        { day: "Day 2 (Wed)", key: "wed", title: "Full Body B (Bench Focus)", exercises: ["Barbell Bench Press: 5x5", "Leg Press: 4x12-15", "Pull-ups (Assisted): 3x to failure", "Lateral Raises: 4x15-20", "Hanging Knee Raises: 3x15"] },
+                                        { day: "Day 3 (Fri)", key: "fri", title: "Full Body C (Deadlift Focus)", exercises: ["Deadlifts: 5x5", "Dumbbell Bench Press: 3x10-12", "T-Bar Row: 3x8-10", "Bulgarian Split Squats: 3x10 (each leg)", "Hammer Curls: 3x12-15", "Tricep Pushdowns: 3x12-15"] },
+                                        { day: "Day 4 (Tue)", key: "tue", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 5 (Thu)", key: "thu", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        },
+                        '4day': {
+                            name: "4-Day Muscle Building Plan",
+                            description: "Classic Upper/Lower split with a focus on hypertrophy.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-6)",
+                                    description: "Focus on increasing volume on compound lifts.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A (Strength)", exercises: ["Barbell Bench Press: 4x6-8", "Barbell Row: 4x6-8", "Overhead Press: 3x8-10", "Lat Pulldown: 3x8-10", "DB Curls: 2x10-12", "Tricep Pushdowns: 2x10-12"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A (Strength)", exercises: ["Barbell Squats: 4x6-8", "Romanian Deadlifts: 3x8-10", "Leg Press: 3x10-12", "Calf Raises: 3x10-15", "Ab Crunches: 3x15"] },
+                                        { day: "Day 3 (Thu)", key: "thu", title: "Upper Body B (Hypertrophy)", exercises: ["Incline DB Press: 3x10-15", "Seated Cable Row: 3x10-15", "DB Shoulder Press: 3x10-15", "Lateral Raises: 3x15-20", "Hammer Curls: 3x10-15", "Overhead Extension: 3x10-15"] },
+                                        { day: "Day 4 (Fri)", key: "fri", title: "Lower Body B (Hypertrophy)", exercises: ["Leg Press: 4x15-20", "Walking Lunges: 3x10-12 (each leg)", "Leg Curls: 3x15-20", "Leg Extensions: 3x15-20", "Plank: 3x60s"] },
+                                        { day: "Day 5 (Wed)", key: "wed", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Intensity (Weeks 7+)",
+                                    description: "Increase intensity and volume.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A (Strength)", exercises: ["Barbell Bench Press: 5x5", "Barbell Row: 5x5", "Overhead Press: 4x6-8", "Pull-ups (Assisted): 3x to failure", "DB Curls: 3x10-12", "Tricep Pushdowns: 3x10-12"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A (Strength)", exercises: ["Barbell Squats: 5x5", "Romanian Deadlifts: 4x8-10", "Leg Press: 3x10-12", "Calf Raises: 4x10-15", "Hanging Knee Raises: 3x15"] },
+                                        { day: "Day 3 (Thu)", key: "thu", title: "Upper Body B (Hypertrophy)", exercises: ["Incline DB Press: 4x10-15", "Seated Cable Row: 4x10-15", "DB Shoulder Press: 3x10-15", "Superset: Lateral Raises (3x15) & Face Pulls (3x15)", "Superset: Hammer Curls (3x15) & Overhead Extension (3x15)"] },
+                                        { day: "Day 4 (Fri)", key: "fri", title: "Lower Body B (Hypertrophy)", exercises: ["Leg Press: 4x15-20", "Bulgarian Split Squats: 3x10-12 (each leg)", "Leg Curls: 4x15-20", "Leg Extensions: 4x15-20", "Plank: 3x90s"] },
+                                        { day: "Day 5 (Wed)", key: "wed", title: "Rest Day", exercises: ["Rest or light activity (walking)."] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        },
+                        '5day': {
+                            name: "5-Day Muscle Building Plan",
+                            description: "Classic PPL (Push, Pull, Legs) split to maximize hypertrophy.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Hypertrophy (Weeks 1-8)",
+                                    description: "Focus on classic PPL split with volume.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Push (Chest, Shoulders, Triceps)", exercises: ["Barbell Bench Press: 4x6-10", "Incline Dumbbell Press: 3x8-12", "Dumbbell Shoulder Press: 3x8-12", "Dumbbell Lateral Raises: 3x12-15", "Tricep Pushdowns (Cable): 3x12-15", "Overhead Dumbbell Extension: 2x12-15"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Pull (Back, Biceps)", exercises: ["Lat Pulldown: 4x8-12", "Seated Cable Row: 3x10-15", "Bent-Over Dumbbell Row: 3x10-12 (each arm)", "Face Pulls (Cable): 3x15-20", "Dumbbell Bicep Curls: 3x10-15", "Hammer Curls: 2x12-15"] },
+                                        { day: "Day 3 (Wed)", key: "wed", title: "Legs (Quads, Hamstrings, Glutes)", exercises: ["Barbell Squats: 4x8-12", "Romanian Deadlifts (RDLs): 3x10-15", "Leg Press: 3x12-20", "Leg Extensions: 3x15-20", "Leg Curls: 3x15-20", "Calf Raises: 4x15-25"] },
+                                        { day: "Day 4 (Thu)", key: "thu", title: "Push (Shoulder/Chest Focus)", exercises: ["Overhead Press (Barbell): 4x6-10", "Dumbbell Bench Press: 3x8-12", "Arnold Press: 3x10-15", "Cable Crossovers: 3x12-15", "Close Grip Bench Press: 3x8-12", "Single Arm Tricep Extension: 2x12-15"] },
+                                        { day: "Day 5 (Fri)", key: "fri", title: "Pull (Back/Bicep Focus)", exercises: ["Pull-ups (or Assisted): 4x to failure", "T-Bar Row: 3x8-12", "Single Arm DB Row: 3x10-12", "Reverse Pec Deck: 3x15-20", "Barbell Curls: 3x10-12", "Preacher Curls: 2x12-15"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Strength & Density (Weeks 9+)",
+                                    description: "Focus on increasing strength with lower reps and adding supersets.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Push (Strength)", exercises: ["Barbell Bench Press: 5x5", "Overhead Press (Barbell): 4x6-8", "Incline Dumbbell Press: 3x8-10", "Superset: Lateral Raises (3x15) & Tricep Pushdowns (3x15)"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Pull (Strength)", exercises: ["Deadlifts: 5x5", "Pull-ups (or Assisted): 4x to failure", "Barbell Row: 4x6-8", "Superset: Face Pulls (3x15) & Bicep Curls (3x10)"] },
+                                        { day: "Day 3 (Wed)", key: "wed", title: "Legs (Strength)", exercises: ["Barbell Squats: 5x5", "Romanian Deadlifts (RDLs): 4x8-10", "Leg Press: 3x10-12", "Leg Extensions: 3x15", "Leg Curls: 3x15", "Calf Raises: 4x15"] },
+                                        { day: "Day 4 (Thu)", key: "thu", title: "Push (Hypertrophy)", exercises: ["Dumbbell Bench Press: 4x10-12", "Arnold Press: 3x10-12", "Cable Crossovers: 3x15-20", "Close Grip Bench Press: 3x10-12", "Overhead Dumbbell Extension: 3x12-15"] },
+                                        { day: "Day 5 (Fri)", key: "fri", title: "Pull (Hypertrophy)", exercises: ["Lat Pulldown: 4x10-12", "Seated Cable Row: 4x12-15", "Single Arm DB Row: 3x10-12", "Dumbbell Bicep Curls: 3x12-15", "Hammer Curls: 3x12-15"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        }
                     },
                     fitness: {
-                        name: "General Fitness Plan (3-Day)",
-                        description: "This 3-day Full Body plan is perfect for beginners or maintaining fitness.",
-                        days: [
-                            { day: "Day 1 (Mon)", key: "mon", title: "Full Body A", exercises: ["Squats: 3x10-12", "Bench Press: 3x10-12", "Barbell Row: 3x10-12", "Overhead Press: 2x10-12", "Plank: 3x45s"] },
-                            { day: "Day 2 (Tue)", key: "tue", title: "Active Rest", exercises: ["Cardio: 20-30 min light-moderate intensity (e.g., Jog or Cycle)"] },
-                            { day: "Day 3 (Wed)", key: "wed", title: "Full Body B", exercises: ["Deadlifts: 3x8-10", "Lat Pulldown: 3x10-12", "Dumbbell Shoulder Press: 3x10-12", "Leg Press: 2x12-15", "Crunches: 3x15"] },
-                            { day: "Day 4 (Thu)", key: "thu", title: "Active Rest", exercises: ["Cardio: 20-30 min light-moderate intensity (e.g., Incline Walk)"] },
-                            { day: "Day 5 (Sun)", key: "sun", title: "Full Body C", exercises: ["Dumbbell Squat to Press: 3x12-15", "Push-ups: 3x to failure", "Dumbbell Rows: 3x10-12 (each arm)", "Walking Lunges: 3x10-12 (each leg)", "Side Planks: 3x30s (each side)"] },
-                            { day: "Day 6 (Fri)", key: "fri", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
-                            { day: "Day 7 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
-                        ]
+                        '3day': {
+                            name: "3-Day General Fitness Plan",
+                            description: "A 3-day Full Body plan perfect for beginners or maintaining fitness.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-6)",
+                                    description: "Focus on learning the movements and building a consistent habit.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Full Body A", exercises: ["Goblet Squats: 3x10-12", "Dumbbell Bench Press: 3x10-12", "Dumbbell Row: 3x10-12 (each arm)", "Overhead Press: 2x10-12", "Plank: 3x45s"] },
+                                        { day: "Day 2 (Wed)", key: "wed", title: "Full Body B", exercises: ["Romanian Deadlifts (Dumbbell): 3x10-12", "Lat Pulldown: 3x10-12", "Push-ups (or Knee Push-ups): 3x to failure", "Leg Press: 2x12-15", "Crunches: 3x15"] },
+                                        { day: "Day 3 (Fri)", key: "fri", title: "Full Body C", exercises: ["Walking Lunges: 3x10 (each leg)", "Seated Cable Row: 3x10-12", "Dumbbell Shoulder Press: 3x10-12", "Leg Curls: 3x12-15", "Side Planks: 3x30s (each side)"] },
+                                        { day: "Day 4 (Tue)", key: "tue", title: "Active Rest", exercises: ["Cardio: 20-30 min light-moderate intensity (e.g., Jog or Cycle)"] },
+                                        { day: "Day 5 (Thu)", key: "thu", title: "Active Rest", exercises: ["Cardio: 20-30 min light-moderate intensity (e.g., Incline Walk)"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Progression (Weeks 7+)",
+                                    description: "Increase the challenge by adding weight or reps.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Full Body A (Strength)", exercises: ["Barbell Squats: 4x8-10", "Barbell Bench Press: 4x8-10", "Barbell Row: 4x8-10", "Overhead Press: 3x8-10", "Plank: 3x60s"] },
+                                        { day: "Day 2 (Wed)", key: "wed", title: "Full Body B (Hypertrophy)", exercises: ["Deadlifts: 4x8-10", "Lat Pulldown: 3x10-15", "Incline Dumbbell Press: 3x10-15", "Leg Press: 3x12-15", "Hanging Knee Raises: 3x15"] },
+                                        { day: "Day 3 (Fri)", key: "fri", title: "Full Body C (Conditioning)", exercises: ["Dumbbell Squat to Press: 3x15", "Push-ups: 3x to failure", "Renegade Rows: 3x10 (each arm)", "Kettlebell Swings (or DB): 3x20", "Side Planks: 3x45s (each side)"] },
+                                        { day: "Day 4 (Tue)", key: "tue", title: "Active Rest", exercises: ["Cardio: 30 min HIIT (e.g., 1 min on, 1 min off)"] },
+                                        { day: "Day 5 (Thu)", key: "thu", title: "Active Rest", exercises: ["Cardio: 30-40 min light-moderate intensity"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        },
+                        '4day': {
+                            name: "4-Day General Fitness Plan",
+                            description: "A 4-day Upper/Lower split for balanced, all-around fitness.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-6)",
+                                    description: "Focus on building strength and work capacity with compound lifts.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A", exercises: ["Dumbbell Bench Press: 3x10-12", "Lat Pulldown: 3x10-12", "Dumbbell Shoulder Press: 3x10-12", "Dumbbell Curls: 2x12", "Tricep Pushdowns: 2x12"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A", exercises: ["Goblet Squats: 3x10-12", "Romanian Deadlifts (DB): 3x10-12", "Leg Press: 3x12-15", "Calf Raises: 3x15", "Ab Crunches: 3x20"] },
+                                        { day: "Day 3 (Thu)", key: "thu", title: "Upper Body B", exercises: ["Incline DB Press: 3x10-12", "Seated Cable Row: 3x10-12", "Lateral Raises: 3x15", "Hammer Curls: 2x12", "Overhead Extension: 2x12"] },
+                                        { day: "Day 4 (Fri)", key: "fri", title: "Lower Body B", exercises: ["Leg Press: 3x10-12", "Walking Lunges: 3x10 (each leg)", "Leg Curls: 3x12-15", "Leg Extensions: 3x12-15", "Plank: 3x60s"] },
+                                        { day: "Day 5 (Wed)", key: "wed", title: "Active Rest", exercises: ["Cardio: 30-40 min light-moderate intensity (e.g., Incline Walk)"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Progression (Weeks 7+)",
+                                    description: "Increase intensity and volume.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A (Strength)", exercises: ["Barbell Bench Press: 4x8-10", "Barbell Row: 4x8-10", "Overhead Press: 3x8-10", "Dumbbell Curls: 3x12", "Tricep Pushdowns: 3x12"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A (Strength)", exercises: ["Barbell Squats: 4x8-10", "Romanian Deadlifts: 3x8-10", "Leg Press: 3x10-12", "Calf Raises: 4x15", "Hanging Knee Raises: 3x15"] },
+                                        { day: "Day 3 (Thu)", key: "thu", title: "Upper Body B (Hypertrophy)", exercises: ["Incline DB Press: 3x10-15", "Seated Cable Row: 3x10-15", "DB Shoulder Press: 3x10-15", "Lateral Raises: 3x15-20", "Hammer Curls: 3x10-15", "Overhead Extension: 3x10-15"] },
+                                        { day: "Day 4 (Fri)", key: "fri", title: "Lower Body B (Hypertrophy)", exercises: ["Leg Press: 4x15-20", "Bulgarian Split Squats: 3x10 (each leg)", "Leg Curls: 4x15-20", "Leg Extensions: 4x15-20", "Plank: 3x90s"] },
+                                        { day: "Day 5 (Wed)", key: "wed", title: "Active Rest", exercises: ["Cardio: 30-40 min light-moderate intensity"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        },
+                        '5day': {
+                            name: "5-Day General Fitness Plan",
+                            description: "A 5-day plan balancing resistance and cardio for all-around health.",
+                            phases: [
+                                {
+                                    name: "Phase 1: Foundation (Weeks 1-4)",
+                                    description: "Focus on building strength and work capacity with compound lifts.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A", exercises: ["Bench Press: 3x8-12", "Lat Pulldown: 3x10-15", "Shoulder Press: 3x10-12", "Dumbbell Curls: 2x12-15", "Tricep Pushdowns: 2x12-15"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A", exercises: ["Squats: 3x8-12", "Romanian Deadlifts: 3x10-15", "Leg Press: 3x12-15", "Calf Raises: 3x15-20", "Ab Crunches: 3x20"] },
+                                        { day: "Day 3 (Wed)", key: "wed", title: "Cardio & Core", exercises: ["Cardio: 30-40 min light-moderate intensity (e.g., Incline Walk)", "Plank: 3x60s", "Side Planks: 3x30s (each side)", "Crunches: 3x20"] },
+                                        { day: "Day 4 (Thu)", key: "thu", title: "Upper Body B", exercises: ["Incline DB Press: 3x10-15", "Seated Cable Row: 3x10-15", "Lateral Raises: 3x15-20", "Hammer Curls: 2x12-15", "Overhead Extension: 2x12-15"] },
+                                        { day: "Day 5 (Fri)", key: "fri", title: "Lower Body B", exercises: ["Deadlifts: 3x6-10", "Walking Lunges: 3x10-12 (each leg)", "Leg Curls: 3x15-20", "Leg Extensions: 3x15-20", "Hanging Knee Raises: 3x15"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                },
+                                {
+                                    name: "Phase 2: Intensity (Weeks 5+)",
+                                    description: "Increase intensity with more volume and HIIT cardio.",
+                                    days: [
+                                        { day: "Day 1 (Mon)", key: "mon", title: "Upper Body A (Intensity)", exercises: ["Bench Press: 4x8-10", "Lat Pulldown: 4x10-12", "Shoulder Press: 3x10-12", "Superset: DB Curls (3x12) & Tricep Pushdowns (3x15)"] },
+                                        { day: "Day 2 (Tue)", key: "tue", title: "Lower Body A (Intensity)", exercises: ["Squats: 4x8-10", "Romanian Deadlifts: 3x10-12", "Leg Press: 4x15-20", "Calf Raises: 4x20", "Hanging Knee Raises: 3x15"] },
+                                        { day: "Day 3 (Wed)", key: "wed", title: "Cardio & Core (HIIT)", exercises: ["Cardio: 25 min HIIT (1 min on, 1 min off)", "Plank: 3x90s", "Side Planks: 3x45s (each side)", "Cable Crunches: 3x15"] },
+                                        { day: "Day 4 (Thu)", key: "thu", title: "Upper Body B (Intensity)", exercises: ["Incline DB Press: 4x10-12", "Seated Cable Row: 4x10-12", "Lateral Raises: 4x15-20", "Superset: Hammer Curls (3x12) & Overhead Extension (3x15)"] },
+                                        { day: "Day 5 (Fri)", key: "fri", title: "Lower Body B (Intensity)", exercises: ["Deadlifts: 4x6-8", "Walking Lunges: 3x12 (each leg)", "Leg Curls: 4x15-20", "Leg Extensions: 4x15-20", "Ab Rollout: 3x to failure"] },
+                                        { day: "Day 6 (Sat)", key: "sat", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] },
+                                        { day: "Day 7 (Sun)", key: "sun", title: "Rest Day", exercises: ["Rest and recover. Focus on diet and hydration."] }
+                                    ]
+                                }
+                            ]
+                        }
                     }
                 },
                 dietPlans: {
@@ -515,7 +797,7 @@
                         schedule: {
                             sun: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
                             mon: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
-                            tue: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            tue: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: "1:00 PM", text: "<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji." }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
                             wed: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
                             thu: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
                             fri: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: 'Evening', text: '<strong>REST DAY.</strong> No gym. Focus on diet, hydration, and sleep. Use the evening to relax or study.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
@@ -622,12 +904,13 @@
                 if (!exercises || exercises.length === 0) {
                     return '<p class="text-gray-500">No exercises found.</p>';
                 }
+                // UPDATED: New "proper" workout format
                 return exercises.map(ex => {
                     const parts = ex.split(':');
                     const exerciseName = parts[0].trim();
                     const setsReps = parts[1] ? parts[1].trim() : '';
                     return `
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-100">
                             <span class="font-medium text-gray-800">${exerciseName}</span>
                             <span class="text-gray-600 text-sm">${setsReps}</span>
                         </div>
@@ -644,11 +927,17 @@
                     
                     const dietKey = userProfile.diet || 'veg';
                     const scheduleData = appData.dietPlans[dietKey].schedule[day];
-                    const currentPlanKey = userProfile.goal || 'fatLoss';
-                    const workoutPlan = appData.workoutPlans[currentPlanKey];
-                    const workoutData = workoutPlan.days.find(d => d.key === day);
                     
-                    dashboardWorkoutSubtitle.textContent = `Showing: ${workoutPlan.name}`;
+                    // NEW: Updated logic for workout plan
+                    const currentPlanKey = userProfile.goal || 'fatLoss';
+                    const currentFreqKey = userProfile.frequency || '3day'; // Default to 3day if not set
+                    const workoutPlan = appData.workoutPlans[currentPlanKey][currentFreqKey];
+                    
+                    // NEW: Pull from Phase 1 for Dashboard
+                    const workoutData = workoutPlan.phases[0].days.find(d => d.key === day);
+                    
+                    // NEW: Update subtitle with phase info
+                    dashboardWorkoutSubtitle.textContent = `Showing: ${workoutPlan.name} (Phase 1)`;
 
                     if (workoutData) {
                         // UPDATED: Use new "proper" formatting
@@ -799,28 +1088,37 @@
             const workoutPlanDescription = document.getElementById('workout-plan-description');
             const workoutPlanContainer = document.getElementById('workout-plan-container');
 
+            // NEW: Updated to render phases
             function renderFullWorkoutPlan() {
                 const currentPlanKey = userProfile.goal || 'fatLoss';
-                const plan = appData.workoutPlans[currentPlanKey];
-
-                if (!plan) {
+                const currentFreqKey = userProfile.frequency || '3day';
+                
+                if (!appData.workoutPlans[currentPlanKey] || !appData.workoutPlans[currentPlanKey][currentFreqKey]) {
                     workoutPlanTitle.textContent = "No Plan Selected";
-                    workoutPlanDescription.textContent = "Please select a primary goal on your Profile page.";
+                    workoutPlanDescription.textContent = "Please select your Goal and Frequency on your Profile page.";
                     workoutPlanContainer.innerHTML = "";
                     return;
                 }
+                
+                const plan = appData.workoutPlans[currentPlanKey][currentFreqKey];
 
                 workoutPlanTitle.textContent = plan.name;
-                // NEW: Update description subtitle
                 workoutPlanDescription.textContent = plan.description;
                 
-                workoutPlanContainer.innerHTML = plan.days.map(day => {
+                workoutPlanContainer.innerHTML = plan.phases.map(phase => {
                     return `
-                        <div class="border border-gray-200 rounded-lg p-6"> <!-- Increased padding -->
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">${day.day} - ${day.title}</h3>
-                            <!-- UPDATED: Use new "proper" formatting -->
-                            <div class="space-y-2">
-                                ${getFormattedExerciseHtml(day.exercises)}
+                        <div class="mb-10">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2">${phase.name}</h3>
+                            <p class="text-gray-600 mb-6">${phase.description}</p>
+                            <div class="space-y-6">
+                                ${phase.days.map(day => `
+                                    <div class="border border-gray-200 rounded-lg p-6">
+                                        <h4 class="text-lg font-semibold text-gray-800 mb-4">${day.day} - ${day.title}</h4>
+                                        <div class="space-y-2">
+                                            ${getFormattedExerciseHtml(day.exercises)}
+                                        </div>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
                     `;
@@ -1025,6 +1323,7 @@
             const profileGoalWeightInput = document.getElementById('profile-goal-weight');
             const profileDurationInput = document.getElementById('profile-duration');
             const dietChoiceBtns = document.querySelectorAll('#diet-choices .goal-choice-btn');
+            const frequencyChoiceBtns = document.querySelectorAll('#frequency-choices .goal-choice-btn'); // NEW
             const goalChoiceBtns = document.querySelectorAll('#goal-choices .goal-choice-btn');
             const saveProfileBtn = document.getElementById('save-profile-btn');
             const resetAppBtn = document.getElementById('reset-app-btn');
@@ -1039,7 +1338,16 @@
                 btn.addEventListener('click', () => {
                     dietChoiceBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    userProfile.diet = btn.dataset.diet;
+                    userProfile.diet = btn.dataset.diet; // This sets the choice in memory
+                });
+            });
+
+            // NEW: Frequency choice listener
+            frequencyChoiceBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    frequencyChoiceBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    userProfile.frequency = btn.dataset.frequency; // This sets the choice in memory
                 });
             });
 
@@ -1047,7 +1355,7 @@
                 btn.addEventListener('click', () => {
                     goalChoiceBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    userProfile.goal = btn.dataset.goal;
+                    userProfile.goal = btn.dataset.goal; // This sets the choice in memory
                 });
             });
 
@@ -1057,11 +1365,13 @@
                 userProfile.goalWeight = profileGoalWeightInput.value;
                 userProfile.duration = profileDurationInput.value;
                 
+                // This saves the in-memory choices to localStorage
                 localStorage.setItem('userProfile', JSON.stringify(userProfile));
                 
                 profileSavedMsg.classList.remove('hidden');
                 setTimeout(() => profileSavedMsg.classList.add('hidden'), 2000);
                 
+                // Now, reload everything based on the new saved data
                 loadProfile();
                 updateGoalChart();
                 renderFullWorkoutPlan();
@@ -1077,7 +1387,8 @@
             function loadProfile() {
                 userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
                 
-                if (!userProfile.name || !userProfile.diet || !userProfile.goal) {
+                // NEW: Updated check to include frequency
+                if (!userProfile.name || !userProfile.diet || !userProfile.goal || !userProfile.frequency) {
                     setTimeout(() => setupModal.classList.remove('hidden'), 500);
                 }
 
@@ -1088,7 +1399,7 @@
                 profileGoalWeightInput.value = userProfile.goalWeight || '';
                 profileDurationInput.value = userProfile.duration || '';
                 
-                // NEW: Load diet choice with checkmark
+                // This part reads from localStorage and applies the 'active' class on page load
                 dietChoiceBtns.forEach(btn => {
                     if (btn.dataset.diet === userProfile.diet) {
                         btn.classList.add('active');
@@ -1096,8 +1407,16 @@
                         btn.classList.remove('active');
                     }
                 });
+                
+                // NEW: Load frequency choice
+                frequencyChoiceBtns.forEach(btn => {
+                    if (btn.dataset.frequency === userProfile.frequency) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
 
-                // NEW: Load goal choice with checkmark
                 goalChoiceBtns.forEach(btn => {
                     if (btn.dataset.goal === userProfile.goal) {
                         btn.classList.add('active');

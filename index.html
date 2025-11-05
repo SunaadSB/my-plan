@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <!-- Chosen Palette: Refined Indigo (Gray-50, White, Gray-900, Indigo-600 Accent) -->
-    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'goal', 'diet', 'frequency', 'workoutTime', 'age', and 'height'. This allows for BMR/BMI calculation and dynamic, age-based workout guidance. -->
-    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal + Frequency -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile selections change data source from a 9-plan matrix -> Justification: Fully personalizes the workout plan -> Library: Vanilla JS. | Report Info: User-defined Age/Height/Weight -> Goal: Inform -> Viz: Dynamic Text (BMI/BMR) -> Interaction: Profile data auto-calculates metrics -> Justification: Provides key health data -> Library: Vanilla JS. -->
+    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'goal', 'diet', 'frequency', 'workoutTime', 'age', 'height', and 'gender'. This allows for accurate BMR/BMI calculation and dynamic, age/gender-based workout guidance. -->
+    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal + Frequency -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile selections change data source from a 9-plan matrix -> Justification: Fully personalizes the workout plan -> Library: Vanilla JS. | Report Info: User-defined Age/Height/Weight/Gender -> Goal: Inform -> Viz: Dynamic Text (BMI/BMR) -> Interaction: Profile data auto-calculates metrics -> Justification: Provides key, accurate health data -> Library: Vanilla JS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -19,7 +19,6 @@
         .nav-btn {
             @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150 border-b-2 border-transparent;
         }
-        /* DESIGN UPDATE: Cleaner "tab" look for active nav item */
         .nav-btn.active {
             @apply bg-white text-indigo-600 font-semibold border-b-2 border-indigo-600;
         }
@@ -29,7 +28,6 @@
         .page-section.active {
             display: block;
         }
-        /* DESIGN UPDATE: Softer shadow, added border for definition */
         .card {
             @apply bg-white shadow-lg rounded-xl p-8 md:p-10 overflow-hidden border border-gray-100;
         }
@@ -62,27 +60,23 @@
                 height: 400px;
             }
         }
-        /* DESIGN UPDATE: New Calendar Styles */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px; /* Increased gap */
-            max-width: 400px; /* Constrain width */
-            margin: 0 auto; /* Center it */
+            gap: 10px; 
+            max-width: 400px; 
+            margin: 0 auto; 
         }
         .calendar-day-header {
             @apply flex items-center justify-center text-xs font-semibold text-gray-500 uppercase;
         }
         .calendar-day {
-            /* Circle shape */
             @apply w-10 h-10 flex items-center justify-center text-sm font-medium rounded-full bg-gray-100 text-gray-500;
         }
         .calendar-day.completed {
-            /* Solid green circle for completed */
             @apply bg-green-500 text-white font-bold;
         }
         .calendar-day.today {
-            /* Ring highlight for today */
             @apply ring-2 ring-indigo-500 ring-offset-2;
         }
         .modal-overlay {
@@ -95,22 +89,18 @@
             @apply w-full text-left p-4 border border-gray-300 rounded-lg hover:bg-indigo-50 cursor-pointer transition-colors duration-150;
         }
         .goal-choice-btn.active {
-            /* More obvious selection */
             @apply bg-indigo-50 border-indigo-600 ring-2 ring-indigo-300;
         }
         .goal-choice-btn .check-icon {
             display: none;
         }
         .goal-choice-btn.active .check-icon {
-            /* Larger, more visible checkmark */
             display: inline-block;
             @apply text-2xl text-indigo-600 font-bold;
         }
-        /* DESIGN UPDATE: Better focus state */
         .input-field {
             @apply w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-colors duration-150;
         }
-        /* DESIGN UPDATE: Softer shadow, better transition */
         .btn-primary {
             @apply w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg hover:bg-indigo-700 transition-all duration-150;
         }
@@ -131,7 +121,7 @@
         </div>
     </div>
 
-    <header class="sticky top-0 bg-white shadow-sm z-10"> <!-- Lighter shadow -->
+    <header class="sticky top-0 bg-white shadow-sm z-10"> 
         <nav class="container mx-auto px-4 py-3 flex justify-center space-x-1 md:space-x-2">
             <button class="nav-btn active" data-target="dashboard-page">Dashboard</button>
             <button class="nav-btn" data-target="tracker-page">Tracker</button>
@@ -142,19 +132,18 @@
         </nav>
     </header>
 
-    <!-- Increased main padding -->
     <main class="container mx-auto p-6 md:p-12">
 
         <!-- =======================
              DASHBOARD PAGE
         ======================== -->
         <section class="page-section active" id="dashboard-page">
-            <div class="mb-10"> <!-- Increased margin -->
+            <div class="mb-10"> 
                 <h1 id="dashboard-title" class="text-3xl font-extrabold text-gray-900 mb-2">Welcome!</h1>
                 <p class="text-lg text-gray-600">Use this dashboard to see your workout and full daily schedule. Select a day to get started.</p>
             </div>
 
-            <div class="mb-10"> <!-- Increased margin -->
+            <div class="mb-10"> 
                 <div class="flex flex-wrap gap-2">
                     <button class="day-btn" data-day="sun">Sun</button>
                     <button class="day-btn" data-day="mon">Mon</button>
@@ -166,12 +155,10 @@
                 </div>
             </div>
             
-            <!-- Increased gap -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="flex flex-col gap-10"> <!-- Increased gap -->
+                <div class="flex flex-col gap-10"> 
                     <div class="card">
                         <h2 class="text-xl font-bold text-indigo-700 mb-2">Today's Workout</h2>
-                        <!-- NEW: Subtitle for active plan -->
                         <p id="dashboard-workout-subtitle" class="text-sm text-gray-500 mb-6">Loading plan...</p>
                         <div id="dashboard-workout">
                             <p class="text-gray-500">Select a day above to see your plan.</p>
@@ -204,12 +191,12 @@
              TRACKER PAGE
         ======================== -->
         <section class="page-section" id="tracker-page">
-            <div class="mb-10"> <!-- Increased margin -->
+            <div class="mb-10"> 
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">My Progress Tracker</h1>
                 <p class="text-lg text-gray-600">Log your weight to see your progress plotted on the chart and review your workout consistency.</p>
             </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10"> <!-- Increased gap -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10"> 
                 <div class="card">
                     <h2 class="text-xl font-bold text-indigo-700 mb-6">Log Your Weight</h2>
                     <div class="flex space-x-2">
@@ -236,7 +223,6 @@
                 <div class="card">
                     <h2 class="text-xl font-bold text-indigo-700 mb-6">Workout Consistency Calendar</h2>
                     <p class="text-gray-600 mb-6">Days you marked 'Complete Workout' on the Dashboard will appear in green. Don't break the chain!</p>
-                    <!-- DESIGN UPDATE: Calendar grid is now styled and centered -->
                     <div class="calendar-grid" id="consistency-calendar">
                         <!-- Calendar days will be injected by JS -->
                     </div>
@@ -248,14 +234,14 @@
              DIET PLAN PAGE
         ======================== -->
         <section class="page-section" id="diet-page">
-             <div class="mb-10"> <!-- Increased margin -->
+             <div class="mb-10"> 
                 <h1 id="diet-plan-title" class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 1: Your Diet Plan</h1>
                 <p id="diet-plan-description" class="text-lg text-gray-600">This plan is based on your profile. Explore the core principles and all meal options here.</p>
             </div>
 
-            <div class="card mb-10"> <!-- Increased margin -->
+            <div class="card mb-10"> 
                 <h2 class="text-xl font-bold text-indigo-700 mb-6">Core Dietary Principles</h2>
-                <ul class="list-disc list-inside space-y-3 text-gray-700"> <!-- Increased spacing -->
+                <ul class="list-disc list-inside space-y-3 text-gray-700"> 
                     <li><strong>Water is Your Best Friend:</strong> Drink 3-4 liters per day. Start with a liter first thing in the morning.</li>
                     <li><strong>Protein in Every Meal:</strong> This is your #1 priority. Focus on lean sources to stay full and maintain muscle.</li>
                     <li><strong>Cut Out "White" Foods:</strong> No sugar, white flour (maida), or fried foods.</li>
@@ -265,7 +251,7 @@
             </div>
 
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Sample Meal Structure</h2>
-            <div id="diet-plan-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-10"> <!-- Increased gap -->
+            <div id="diet-plan-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-10"> 
                 <!-- Meal cards will be built by JS -->
             </div>
         </section>
@@ -274,14 +260,14 @@
              WORKOUT PLAN PAGE
         ======================== -->
         <section class="page-section" id="workout-page">
-            <div class="mb-10"> <!-- Increased margin -->
+            <div class="mb-10"> 
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 2: Your Personalized Workout Plan</h1>
                 <p class="text-lg text-gray-600">This plan is dynamically generated based on the "Primary Goal" you set in your profile.</p>
             </div>
             
-            <div class="card mb-10"> <!-- Increased margin -->
+            <div class="card mb-10"> 
                 <h2 class="text-xl font-bold text-indigo-700 mb-6">Your 80-Minute Session</h2>
-                <ul class="list-disc list-inside space-y-3 text-gray-700"> <!-- Increased spacing -->
+                <ul class="list-disc list-inside space-y-3 text-gray-700"> 
                     <li><strong>Warm-up (10 min):</strong> 5 min light jog/incline walk + 5 min dynamic stretches.</li>
                     <li><strong>Resistance Training (45-50 min):</strong> The core of your workout.</li>
                     <li><strong>Cardio (20 min):</strong> High-Intensity or Steady State.</li>
@@ -289,17 +275,15 @@
                 </ul>
             </div>
 
-            <!-- NEW: Age-Based Guidance Card -->
-            <div id="age-guidance-card" class="card mb-10 bg-indigo-50 border-indigo-200 hidden">
-                <h2 id="age-guidance-title" class="text-xl font-bold text-indigo-700 mb-4"></h2>
-                <p id="age-guidance-content" class="text-indigo-800"></p>
+            <!-- NEW: Age & Gender-Based Guidance Card -->
+            <div id="guidance-card" class="card mb-10 bg-indigo-50 border-indigo-200 hidden">
+                <h2 id="guidance-title" class="text-xl font-bold text-indigo-700 mb-4"></h2>
+                <p id="guidance-content" class="text-indigo-800"></p>
             </div>
 
             <div class="card">
                 <h2 class="text-xl font-bold text-indigo-700 mb-2" id="workout-plan-title">Your Workout Plan</h2>
-                <!-- NEW: Subtitle for active plan -->
                 <p id="workout-plan-description" class="text-lg text-gray-600 mb-8">Set your goal on the Profile page to see your plan.</p>
-                <!-- NEW: Container for PHASES -->
                 <div class="space-y-10" id="workout-plan-container">
                     <!-- Workout plan phases will be dynamically injected here -->
                 </div>
@@ -310,12 +294,12 @@
              GOALS & SCHEDULE PAGE
         ======================== -->
         <section class="page-section" id="goals-page">
-            <div class="mb-10"> <!-- Increased margin -->
+            <div class="mb-10"> 
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 3: Goals, Schedule & Sleep</h1>
                 <p class="text-lg text-gray-600">This section covers your primary goal, realistic outlook, and sleep schedule. The chart below visualizes your weight loss target based on your profile.</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10"> <!-- Increased gap -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10"> 
                 <div class="card">
                     <h2 class="text-xl font-bold text-indigo-700 mb-6" id="goal-chart-title">Your Goal Chart</h2>
                     <div class="chart-container">
@@ -324,7 +308,6 @@
                     <p class="text-sm text-gray-500 mt-3 text-center">Log your weight on the "Tracker" page to see your progress here!</p>
                 </div>
                 <div class="card">
-                    <!-- NEW: Health Metrics Section -->
                     <div class="mb-8 border-b border-gray-200 pb-8">
                         <h2 class="text-xl font-bold text-indigo-700 mb-6">Your Health Metrics</h2>
                         <div class="space-y-4">
@@ -360,25 +343,42 @@
              PROFILE PAGE
         ======================== -->
         <section class="page-section" id="profile-page">
-            <div class="mb-10"> <!-- Increased margin -->
+            <div class="mb-10"> 
                 <h1 class="text-3xl font-extrabold text-gray-900 mb-2">My Profile</h1>
                 <p class="text-lg text-gray-600">This information is saved locally on your device and personalizes the app for you.</p>
             </div>
 
             <div class="card max-w-2xl mx-auto">
-                <div class="space-y-8"> <!-- Increased spacing -->
+                <div class="space-y-8"> 
                     <div>
                         <label for="profile-name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
                         <input type="text" id="profile-name" class="input-field" placeholder="Enter your name">
                     </div>
 
+                    <!-- NEW: Gender Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Your Gender</label>
+                        <div class="flex flex-col sm:flex-row gap-4" id="gender-choices">
+                            <button class="goal-choice-btn flex-1" data-gender="male">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-gray-800">Male</span>
+                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
+                                </div>
+                            </button>
+                             <button class="goal-choice-btn flex-1" data-gender="female">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-gray-800">Female</span>
+                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <!-- NEW: Age Input -->
                         <div>
                             <label for="profile-age" class="block text-sm font-medium text-gray-700 mb-1">Your Age</label>
                             <input type="number" id="profile-age" class="input-field" placeholder="e.g., 25">
                         </div>
-                        <!-- NEW: Height Input -->
                         <div>
                             <label for="profile-height" class="block text-sm font-medium text-gray-700 mb-1">Your Height (in cm)</label>
                             <input type="number" id="profile-height" class="input-field" placeholder="e.g., 183">
@@ -401,7 +401,6 @@
                         <input type="number" id="profile-duration" class="input-field" placeholder="e.g., 8, 12, 24">
                     </div>
 
-                    <!-- NEW: Dietary Preference -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">What is your dietary preference?</label>
                         <div class="flex flex-col sm:flex-row gap-4" id="diet-choices">
@@ -426,7 +425,6 @@
                         </div>
                     </div>
 
-                    <!-- NEW: Workout Frequency -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">How many days per week can you train?</label>
                         <div class="flex flex-col sm:flex-row gap-4" id="frequency-choices">
@@ -451,7 +449,6 @@
                         </div>
                     </div>
 
-                    <!-- NEW: Workout Time -->
                     <div>
                         <label for="profile-workout-time" class="block text-sm font-medium text-gray-700 mb-2">What time do you start your workout?</label>
                         <select id="profile-workout-time" class="input-field">
@@ -492,7 +489,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4"> <!-- Added padding top -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4"> 
                         <button id="save-profile-btn" class="btn-primary">
                             Save Profile
                         </button>
@@ -511,7 +508,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             // --- App Data (Static) ---
-            // NEW: WORKOUT PLANS ARE NOW A 3x3 MATRIX (Goal x Frequency)
             const appData = {
                 workoutPlans: {
                     fatLoss: {
@@ -930,12 +926,10 @@
             const dashboardSchedule = document.getElementById('dashboard-schedule');
             const workoutCompleteContainer = document.getElementById('workout-complete-container');
 
-            // NEW: Helper function to parse and format exercises
             function getFormattedExerciseHtml(exercises) {
                 if (!exercises || exercises.length === 0) {
                     return '<p class="text-gray-500">No exercises found.</p>';
                 }
-                // UPDATED: New "proper" workout format
                 return exercises.map(ex => {
                     const parts = ex.split(':');
                     const exerciseName = parts[0].trim();
@@ -958,9 +952,8 @@
                     
                     const dietKey = userProfile.diet || 'veg';
                     
-                    // NEW: Updated logic for workout plan
                     const currentPlanKey = userProfile.goal || 'fatLoss';
-                    const currentFreqKey = userProfile.frequency || '3day'; // Default to 3day if not set
+                    const currentFreqKey = userProfile.frequency || '3day'; 
                     
                     if (!appData.workoutPlans[currentPlanKey] || !appData.workoutPlans[currentPlanKey][currentFreqKey]) {
                         dashboardWorkoutSubtitle.textContent = "Please set your Profile first.";
@@ -969,14 +962,11 @@
                     } else {
                         const workoutPlan = appData.workoutPlans[currentPlanKey][currentFreqKey];
                         
-                        // NEW: Pull from Phase 1 for Dashboard
                         const workoutData = workoutPlan.phases[0].days.find(d => d.key === day);
                         
-                        // NEW: Update subtitle with phase info
                         dashboardWorkoutSubtitle.textContent = `Showing: ${workoutPlan.name} (Phase 1)`;
 
                         if (workoutData) {
-                            // UPDATED: Use new "proper" formatting
                             dashboardWorkout.innerHTML = `
                                 <h3 class="text-lg font-semibold text-gray-800 mb-3">${workoutData.title}</h3>
                                 <div class="space-y-1">
@@ -990,13 +980,11 @@
                         }
                     }
                     
-                    // NEW: DYNAMIC SCHEDULE GENERATION
                     const workoutTime = userProfile.workoutTime || '20:00';
                     let dayType = 'off'; // sun, sat
                     if (['mon', 'tue'].includes(day)) dayType = 'short';
                     if (['wed', 'thu', 'fri'].includes(day)) dayType = 'long';
 
-                    // FIX: Pass 'day' (as dayKey) into the function
                     const scheduleData = generateDynamicSchedule(day, dayType, workoutTime, dietKey);
                     let scheduleHtml = '<div class="space-y-4">';
                     if (scheduleData.error) {
@@ -1026,7 +1014,6 @@
                 }
             }
 
-            // --- Workout Complete Logic ---
             function updateWorkoutCompleteButton(isWorkoutDay) {
                 const todayStr = new Date().toDateString();
                 const isCompleted = completedWorkouts.includes(todayStr);
@@ -1047,12 +1034,11 @@
                             localStorage.setItem('completedWorkouts', JSON.stringify(completedWorkouts));
                         }
                         updateWorkoutCompleteButton(true);
-                        renderCalendar(); // DESIGN UPDATE: Re-render calendar on complete
+                        renderCalendar(); 
                     });
                 }
             }
 
-            // --- Water Tracker Logic ---
             const waterCountEl = document.getElementById('water-count');
             const waterPlusBtn = document.getElementById('water-plus-btn');
             const waterMinusBtn = document.getElementById('water-minus-btn');
@@ -1081,7 +1067,6 @@
                 }
             });
 
-            // --- Diet Page Logic (NEW: Dynamic) ---
             const dietPlanTitle = document.getElementById('diet-plan-title');
             const dietPlanDescription = document.getElementById('diet-plan-description');
             const dietPlanContainer = document.getElementById('diet-plan-options-container');
@@ -1106,7 +1091,7 @@
                             <h3 class="text-lg font-semibold text-indigo-700">${meal.title}</h3>
                             <span class="text-xl font-bold">+</span>
                         </div>
-                        <div id="${meal.id}-content" class="pt-6 space-y-4 hidden"> <!-- Increased padding/space -->
+                        <div id="${meal.id}-content" class="pt-6 space-y-4 hidden"> 
                             ${meal.options.map(opt => `
                                 <div class="border-b border-gray-100 pb-3">
                                     <h4 class="font-semibold text-gray-800">${opt.name}</h4>
@@ -1128,33 +1113,43 @@
                 });
             }
 
-
-            // --- Workout Page Logic ---
             const workoutPlanTitle = document.getElementById('workout-plan-title');
             const workoutPlanDescription = document.getElementById('workout-plan-description');
             const workoutPlanContainer = document.getElementById('workout-plan-container');
-            // NEW: Age Guidance elements
-            const ageGuidanceCard = document.getElementById('age-guidance-card');
-            const ageGuidanceTitle = document.getElementById('age-guidance-title');
-            const ageGuidanceContent = document.getElementById('age-guidance-content');
+            const guidanceCard = document.getElementById('guidance-card');
+            const guidanceTitle = document.getElementById('guidance-title');
+            const guidanceContent = document.getElementById('guidance-content');
 
-            // NEW: Updated to render phases AND age guidance
             function renderFullWorkoutPlan() {
                 const age = parseInt(userProfile.age);
-                if (!age || age < 16) {
-                    ageGuidanceCard.classList.add('hidden');
+                const gender = userProfile.gender;
+
+                if (!age || age < 16 || !gender) {
+                    guidanceCard.classList.add('hidden');
                 } else {
-                    ageGuidanceCard.classList.remove('hidden');
+                    guidanceCard.classList.remove('hidden');
+                    let title = '';
+                    let content = '';
+
                     if (age < 25) {
-                        ageGuidanceTitle.textContent = "Age Bracket: Prime (Under 25)";
-                        ageGuidanceContent.textContent = "Your body is in its prime for recovery. Focus on progressive overload and pushing the intensity on your main lifts. Don't neglect form.";
+                        title = `Age Bracket: Prime (Under 25, ${gender})`;
+                        content = "Your body is in its prime for recovery. Focus on progressive overload and pushing the intensity on your main lifts. Don't neglect form. ";
                     } else if (age < 40) {
-                        ageGuidanceTitle.textContent = "Age Bracket: Peak (25-39)";
-                        ageGuidanceContent.textContent = "Focus on consistency and listening to your body. Form is critical. Ensure you are fully warming up before lifts and cooling down after.";
+                        title = `Age Bracket: Peak (25-39, ${gender})`;
+                        content = "Focus on consistency and listening to your body. Form is critical. Ensure you are fully warming up before lifts and cooling down after. ";
                     } else {
-                        ageGuidanceTitle.textContent = "Age Bracket: Master (40+)";
-                        ageGuidanceContent.textContent = "Prioritize warm-ups and mobility (10-15 min). Focus on controlled reps over heavy 1-rep maxes. Reduce high-impact exercises if you feel joint pain. An extra rest day is smart.";
+                        title = `Age Bracket: Master (40+, ${gender})`;
+                        content = "Prioritize warm-ups and mobility (10-15 min). Focus on controlled reps over heavy 1-rep maxes. Reduce high-impact exercises if you feel joint pain. An extra rest day is smart. ";
                     }
+                    
+                    if (gender === 'female') {
+                        content += "Many women find they respond well to higher volume and frequency; don't be afraid to lift heavy in the 6-12 rep range, especially on leg days.";
+                    } else {
+                        content += "If your goal is muscle, feel free to add an extra set to arm or shoulder exercises if you recover well. Ensure you are lifting with controlled form.";
+                    }
+                    
+                    guidanceTitle.textContent = title;
+                    guidanceContent.textContent = content;
                 }
 
                 const currentPlanKey = userProfile.goal || 'fatLoss';
@@ -1192,7 +1187,6 @@
                 }).join('');
             }
 
-            // --- Tracker Page Logic ---
             const weightInput = document.getElementById('weight-input');
             const logWeightBtn = document.getElementById('log-weight-btn');
             const weightHistoryTable = document.getElementById('weight-history-table');
@@ -1216,6 +1210,7 @@
                     
                     renderWeightHistory();
                     updateGoalChart();
+                    updateHealthMetrics(); // Update metrics on new weight
                     weightInput.value = '';
                 }
             });
@@ -1237,23 +1232,20 @@
                 });
             }
 
-            // DESIGN UPDATE: Rewritten calendar function
             function renderCalendar() {
                 calendarGrid.innerHTML = '';
                 const duration = parseInt(userProfile.duration) || 8;
-                const totalWeeks = duration > 0 ? duration : 8; // Default to 8 weeks
+                const totalWeeks = duration > 0 ? duration : 8; 
                 const totalDays = totalWeeks * 7;
                 
-                // Add Day Headers
                 const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
                 weekDays.forEach(day => {
                     const dayEl = document.createElement('div');
-                    dayEl.className = 'calendar-day-header'; // New class
+                    dayEl.className = 'calendar-day-header'; 
                     dayEl.textContent = day;
                     calendarGrid.appendChild(dayEl);
                 });
                 
-                // Align calendar to the start of the current week (Sunday)
                 const today = new Date();
                 const todayDateStr = today.toDateString();
                 const firstDay = new Date(today);
@@ -1270,20 +1262,18 @@
                     const isCompleted = completedWorkouts.includes(dayStr);
                     const isToday = (dayStr === todayDateStr);
                     
-                    dayEl.className = 'calendar-day'; // New class
+                    dayEl.className = 'calendar-day'; 
                     if (isCompleted) {
                         dayEl.classList.add('completed');
                     }
                     if (isToday) {
-                        dayEl.classList.add('today'); // New class
+                        dayEl.classList.add('today'); 
                     }
                     calendarGrid.appendChild(dayEl);
                 }
             }
             
-            // --- Goal Chart Logic ---
             const goalChartTitle = document.getElementById('goal-chart-title');
-            // NEW: Health metrics elements
             const bmiDisplay = document.getElementById('bmi-display');
             const bmrDisplay = document.getElementById('bmr-display');
 
@@ -1393,11 +1383,12 @@
                 }
             }
 
-            // NEW: Health Metrics Calculator
             function updateHealthMetrics() {
                 const height = parseFloat(userProfile.height);
-                const weight = parseFloat(userProfile.startWeight);
+                // Use the *latest* weight if available, otherwise fall back to start weight
+                const weight = (weightHistory.length > 0) ? parseFloat(weightHistory[0].weight) : parseFloat(userProfile.startWeight);
                 const age = parseInt(userProfile.age);
+                const gender = userProfile.gender;
 
                 if (height && weight && height > 0 && weight > 0) {
                     const heightM = height / 100;
@@ -1407,23 +1398,28 @@
                     bmiDisplay.textContent = `Your BMI: --`;
                 }
 
-                if (height && weight && age && height > 0 && weight > 0 && age > 0) {
-                    // Mifflin-St Jeor equation for males
-                    const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+                if (height && weight && age && gender && height > 0 && weight > 0 && age > 0) {
+                    // Mifflin-St Jeor equation
+                    let bmr;
+                    if (gender === 'male') {
+                        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+                    } else {
+                        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+                    }
                     bmrDisplay.textContent = `Your Est. BMR: ${bmr.toFixed(0)} Calories/Day`;
                 } else {
                     bmrDisplay.textContent = `Your Est. BMR: --`;
                 }
             }
 
-            // --- Profile Page Logic ---
             const setupModal = document.getElementById('setup-modal');
             const goToProfileBtn = document.getElementById('go-to-profile-btn');
             const dashboardTitle = document.getElementById('dashboard-title');
             
             const profileNameInput = document.getElementById('profile-name');
-            const profileAgeInput = document.getElementById('profile-age'); // NEW
-            const profileHeightInput = document.getElementById('profile-height'); // NEW
+            const profileGenderBtns = document.querySelectorAll('#gender-choices .goal-choice-btn'); // NEW
+            const profileAgeInput = document.getElementById('profile-age'); 
+            const profileHeightInput = document.getElementById('profile-height'); 
             const profileStartWeightInput = document.getElementById('profile-start-weight');
             const profileGoalWeightInput = document.getElementById('profile-goal-weight');
             const profileDurationInput = document.getElementById('profile-duration');
@@ -1435,7 +1431,6 @@
             const resetAppBtn = document.getElementById('reset-app-btn');
             const profileSavedMsg = document.getElementById('profile-saved-msg');
 
-            // NEW: Populate workout time select
             function populateWorkoutTimes() {
                 for (let i = 5; i <= 22; i++) {
                     const hour = i.toString().padStart(2, '0');
@@ -1462,20 +1457,28 @@
                 navigateTo('profile-page');
             });
 
+            // NEW: Gender choice listener
+            profileGenderBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    profileGenderBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    userProfile.gender = btn.dataset.gender; 
+                });
+            });
+
             dietChoiceBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     dietChoiceBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    userProfile.diet = btn.dataset.diet; // This sets the choice in memory
+                    userProfile.diet = btn.dataset.diet; 
                 });
             });
 
-            // NEW: Frequency choice listener
             frequencyChoiceBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     frequencyChoiceBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    userProfile.frequency = btn.dataset.frequency; // This sets the choice in memory
+                    userProfile.frequency = btn.dataset.frequency; 
                 });
             });
 
@@ -1483,32 +1486,31 @@
                 btn.addEventListener('click', () => {
                     goalChoiceBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    userProfile.goal = btn.dataset.goal; // This sets the choice in memory
+                    userProfile.goal = btn.dataset.goal; 
                 });
             });
 
             saveProfileBtn.addEventListener('click', () => {
                 userProfile.name = profileNameInput.value;
-                userProfile.age = profileAgeInput.value; // NEW
-                userProfile.height = profileHeightInput.value; // NEW
+                userProfile.age = profileAgeInput.value; 
+                userProfile.height = profileHeightInput.value; 
                 userProfile.startWeight = profileStartWeightInput.value;
                 userProfile.goalWeight = profileGoalWeightInput.value;
                 userProfile.duration = profileDurationInput.value;
                 userProfile.workoutTime = profileWorkoutTimeSelect.value; 
+                // Gender, Diet, Freq, Goal are already set in userProfile on click
                 
-                // This saves the in-memory choices to localStorage
                 localStorage.setItem('userProfile', JSON.stringify(userProfile));
                 
                 profileSavedMsg.classList.remove('hidden');
                 setTimeout(() => profileSavedMsg.classList.add('hidden'), 2000);
                 
-                // Now, reload everything based on the new saved data
                 loadProfile();
                 updateGoalChart();
-                updateHealthMetrics(); // NEW
+                updateHealthMetrics(); 
                 renderFullWorkoutPlan();
                 renderDietPlan();
-                selectToday(); // Re-run to update dashboard with new diet
+                selectToday(); 
             });
 
             resetAppBtn.addEventListener('click', () => {
@@ -1519,22 +1521,28 @@
             function loadProfile() {
                 userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
                 
-                // NEW: Updated check to include age and height
-                if (!userProfile.name || !userProfile.diet || !userProfile.goal || !userProfile.frequency || !userProfile.workoutTime || !userProfile.age || !userProfile.height) {
+                if (!userProfile.name || !userProfile.diet || !userProfile.goal || !userProfile.frequency || !userProfile.workoutTime || !userGendera.age || !userProfile.height || !userProfile.gender) {
                     setTimeout(() => setupModal.classList.remove('hidden'), 500);
                 }
 
                 dashboardTitle.textContent = userProfile.name ? `Welcome, ${userProfile.name}!` : "Welcome! Please set up your profile.";
                 
                 profileNameInput.value = userProfile.name || '';
-                profileAgeInput.value = userProfile.age || ''; // NEW
-                profileHeightInput.value = userProfile.height || ''; // NEW
+                profileAgeInput.value = userProfile.age || ''; 
+                profileHeightInput.value = userProfile.height || ''; 
                 profileStartWeightInput.value = userProfile.startWeight || '';
                 profileGoalWeightInput.value = userProfile.goalWeight || '';
                 profileDurationInput.value = userProfile.duration || '';
                 profileWorkoutTimeSelect.value = userProfile.workoutTime || '20:00'; 
                 
-                // This part reads from localStorage and applies the 'active' class on page load
+                profileGenderBtns.forEach(btn => {
+                    if (btn.dataset.gender === userProfile.gender) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
                 dietChoiceBtns.forEach(btn => {
                     if (btn.dataset.diet === userProfile.diet) {
                         btn.classList.add('active');
@@ -1543,7 +1551,6 @@
                     }
                 });
                 
-                // NEW: Load frequency choice
                 frequencyChoiceBtns.forEach(btn => {
                     if (btn.dataset.frequency === userProfile.frequency) {
                         btn.classList.add('active');
@@ -1561,9 +1568,6 @@
                 });
             }
 
-            // --- NEW: DYNAMIC SCHEDULE GENERATION LOGIC ---
-
-            // Helper function to parse "HH:MM" string to a Date object
             function parseTime(timeStr) {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 const date = new Date();
@@ -1571,29 +1575,27 @@
                 return date;
             }
 
-            // Helper function to add minutes to a Date object and return a new Date object
             function addMinutes(date, minutes) {
                 return new Date(date.getTime() + minutes * 60000);
             }
 
-            // Helper function to format a Date object to "HH:MM AM/PM"
             function formatTime(date) {
                 let hours = date.getHours();
                 let minutes = date.getMinutes();
                 const ampm = hours >= 12 ? 'PM' : 'AM';
                 hours = hours % 12;
-                hours = hours ? hours : 12; // the hour '0' should be '12'
+                hours = hours ? hours : 12; 
                 minutes = minutes < 10 ? '0' + minutes : minutes;
                 return `${hours}:${minutes} ${ampm}`;
             }
 
-            // The new "brain" for schedule generation
-            // FIX: Added 'dayKey' as the first parameter
             function generateDynamicSchedule(dayKey, dayType, workoutStartTimeStr, dietKey) {
                 const schedule = [];
                 let error = null;
 
-                const dietMeals = appData.dietPlans[dietKey].meals;
+                // Ensure we have a valid dietKey
+                const validDietKey = appData.dietPlans[dietKey] ? dietKey : 'veg';
+                const dietMeals = appData.dietPlans[validDietKey].meals;
                 const mealNames = {
                     breakfast: dietMeals.find(m => m.id === 'meal-1').title,
                     lunch: dietMeals.find(m => m.id === 'meal-2').title,
@@ -1603,9 +1605,9 @@
                 };
 
                 const workoutStart = parseTime(workoutStartTimeStr);
-                const workoutEnd = addMinutes(workoutStart, 80); // 80 min workout
-                const preWorkoutMealTime = addMinutes(workoutStart, -90); // 1.5 hrs before
-                const postWorkoutMealTime = addMinutes(workoutEnd, 15); // 15 mins after
+                const workoutEnd = addMinutes(workoutStart, 80); 
+                const preWorkoutMealTime = addMinutes(workoutStart, -90); 
+                const postWorkoutMealTime = addMinutes(workoutEnd, 15); 
                 
                 const collegeStart = parseTime("08:30");
                 const collegeEndShort = parseTime("14:00");
@@ -1614,7 +1616,6 @@
                 const wakeTime = parseTime("07:00");
                 const sleepTime = parseTime("23:30");
 
-                // --- Define Time Slots ---
                 const wakeSlot = { time: formatTime(wakeTime), text: "Wake up. Drink 1L water." };
                 const breakfastSlot = { time: formatTime(addMinutes(wakeTime, 30)), text: `<strong>${mealNames.breakfast}</strong>` };
                 const lunchSlot = { time: formatTime(parseTime("13:00")), text: `<strong>${mealNames.lunch}</strong> (Packed)` };
@@ -1629,7 +1630,6 @@
                 const collegeLongSlot = { time: `${formatTime(collegeStart)} - ${formatTime(collegeEndLong)}`, text: "<strong>College (Long Day)</strong>" };
                 const restDaySlot = { time: "Evening", text: "<strong>REST DAY.</strong> No gym. Focus on diet." };
 
-                // --- Build Schedule Based on Day Type ---
                 if (dayType === 'off') {
                     if(dayKey === 'sat') {
                         schedule.push(wakeSlot, breakfastSlot, lunchSlot, snackSlot, restDaySlot, sleepSlot);
@@ -1638,41 +1638,42 @@
                     }
                 } else if (dayType === 'short') {
                     schedule.push(wakeSlot, breakfastSlot, collegeShortSlot);
-                    // Check for conflicts
                     if (workoutStart >= collegeStart && workoutStart < collegeEndShort) {
                         error = "Your workout time conflicts with your 'Short Day' college schedule (8:30 AM - 2:00 PM). Please pick a different time.";
                     }
                     schedule.push(lunchSlot, snackSlot, preWorkoutSlot, workoutSlot, postWorkoutSlot, sleepSlot);
                 } else if (dayType === 'long') {
                     schedule.push(wakeSlot, breakfastSlot, collegeLongSlot);
-                    // Check for conflicts
                     if (workoutStart >= collegeStart && workoutStart < collegeEndLong) {
                         error = "Your workout time conflicts with your 'Long Day' college schedule (8:30 AM - 4:00 PM). Please pick a different time.";
                     }
                     schedule.push(lunchSlot, snackSlot, preWorkoutSlot, workoutSlot, postWorkoutSlot, sleepSlot);
                 }
 
-                // Sort the schedule by time
                 const sortedSchedule = schedule.sort((a, b) => {
-                    // Handle non-time-based strings like "Evening"
                     if (a.time.includes(":") && !b.time.includes(":")) return -1;
                     if (!a.time.includes(":") && b.time.includes(":")) return 1;
                     if (!a.time.includes(":") && !b.time.includes(":")) return 0;
                     
-                    const timeA = parseTime(a.time.split(' - ')[0]); // Get start time
+                    const timeA = parseTime(a.time.split(' - ')[0]); 
                     const timeB = parseTime(b.time.split(' - ')[0]);
                     return timeA - timeB;
                 });
                 
-                // Remove duplicates (e.g., if a rest day is also a workout day)
                 const uniqueSchedule = [];
                 const seenTimes = new Set();
                 for (const item of sortedSchedule) {
-                    if (dayKey === 'sat' && (item.text.includes("Workout") || item.text.includes("Post-Workout"))) {
+                    if (dayKey === 'sat' && (item.text.includes("Workout") || item.text.includes("Post-Workout") || item.text.includes(mealNames.preWorkout))) {
                         continue;
                     }
-                    if (dayKey === 'fri' && dayType !== 'off' && (item.text.includes("Workout") || item.text.includes("Post-Workout"))) {
-                         if (!seenTimes.has(restDaySlot.time)) {
+                    
+                    const currentPlanKey = userProfile.goal || 'fatLoss';
+                    const currentFreqKey = userProfile.frequency || '3day';
+                    const workoutPlan = appData.workoutPlans[currentPlanKey][currentFreqKey];
+                    const workoutData = workoutPlan.phases[0].days.find(d => d.key === dayKey);
+                    
+                    if (workoutData && workoutData.title.toLowerCase().indexOf('rest') !== -1 && (item.text.includes("Workout") || item.text.includes("Post-Workout") || item.text.includes(mealNames.preWorkout))) {
+                        if (!seenTimes.has(restDaySlot.time)) {
                             uniqueSchedule.push(restDaySlot);
                             seenTimes.add(restDaySlot.time);
                          }
@@ -1688,9 +1689,8 @@
                 return { schedule: uniqueSchedule, error: error };
             }
 
-            // --- Data Initialization ---
             function initApp() {
-                populateWorkoutTimes(); // NEW
+                populateWorkoutTimes(); 
                 loadProfile();
                 weightHistory = JSON.parse(localStorage.getItem('weightHistory')) || [];
                 waterData = JSON.parse(localStorage.getItem('waterData')) || { count: 0, date: new Date().toDateString() };
@@ -1698,7 +1698,7 @@
                 
                 updateWaterTracker();
                 updateGoalChart();
-                updateHealthMetrics(); // NEW
+                updateHealthMetrics(); 
                 renderFullWorkoutPlan();
                 renderDietPlan();
                 selectToday();

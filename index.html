@@ -17,10 +17,11 @@
             color: #1f2937;
         }
         .nav-btn {
-            @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150;
+            @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150 border-b-2 border-transparent;
         }
+        /* DESIGN UPDATE: Cleaner "tab" look for active nav item */
         .nav-btn.active {
-            @apply bg-indigo-50 text-indigo-700 font-semibold;
+            @apply bg-white text-indigo-600 font-semibold border-b-2 border-indigo-600;
         }
         .page-section {
             display: none;
@@ -28,9 +29,9 @@
         .page-section.active {
             display: block;
         }
+        /* DESIGN UPDATE: Softer shadow, added border for definition */
         .card {
-            /* Increased internal padding */
-            @apply bg-white shadow-md rounded-lg p-8 md:p-10 overflow-hidden;
+            @apply bg-white shadow-lg rounded-xl p-8 md:p-10 overflow-hidden border border-gray-100;
         }
         .day-btn {
             @apply px-4 py-2 rounded-md text-sm font-medium text-gray-600 bg-white shadow-sm border border-gray-200 hover:bg-gray-100 transition-colors duration-150 flex-1;
@@ -61,16 +62,28 @@
                 height: 400px;
             }
         }
+        /* DESIGN UPDATE: New Calendar Styles */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 10px; /* Increased gap */
+            max-width: 400px; /* Constrain width */
+            margin: 0 auto; /* Center it */
+        }
+        .calendar-day-header {
+            @apply flex items-center justify-center text-xs font-semibold text-gray-500 uppercase;
         }
         .calendar-day {
-            @apply w-full h-10 flex items-center justify-center text-xs font-medium rounded-md bg-gray-100 text-gray-400;
+            /* Circle shape */
+            @apply w-10 h-10 flex items-center justify-center text-sm font-medium rounded-full bg-gray-100 text-gray-500;
         }
         .calendar-day.completed {
+            /* Solid green circle for completed */
             @apply bg-green-500 text-white font-bold;
+        }
+        .calendar-day.today {
+            /* Ring highlight for today */
+            @apply ring-2 ring-indigo-500 ring-offset-2;
         }
         .modal-overlay {
             @apply fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-20;
@@ -79,26 +92,30 @@
             @apply bg-white rounded-lg shadow-2xl p-8 max-w-lg w-full;
         }
         .goal-choice-btn {
-            @apply w-full text-left p-4 border border-gray-300 rounded-md hover:bg-indigo-50 cursor-pointer transition-colors duration-150;
+            @apply w-full text-left p-4 border border-gray-300 rounded-lg hover:bg-indigo-50 cursor-pointer transition-colors duration-150;
         }
-        /* NEW: More prominent active state for preference buttons */
         .goal-choice-btn.active {
-            @apply bg-indigo-50 border-indigo-600 ring-2 ring-indigo-200;
+            /* More obvious selection */
+            @apply bg-indigo-50 border-indigo-600 ring-2 ring-indigo-300;
         }
         .goal-choice-btn .check-icon {
             display: none;
         }
         .goal-choice-btn.active .check-icon {
+            /* Larger, more visible checkmark */
             display: inline-block;
+            @apply text-2xl text-indigo-600 font-bold;
         }
+        /* DESIGN UPDATE: Better focus state */
         .input-field {
-            @apply w-full p-3 border border-gray-300 rounded-md shadow-sm;
+            @apply w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-colors duration-150;
         }
+        /* DESIGN UPDATE: Softer shadow, better transition */
         .btn-primary {
-            @apply w-full bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700 transition-colors duration-150;
+            @apply w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg hover:bg-indigo-700 transition-all duration-150;
         }
         .btn-danger {
-            @apply w-full bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition-colors duration-150;
+            @apply w-full bg-red-600 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg hover:bg-red-700 transition-all duration-150;
         }
     </style>
 </head>
@@ -114,7 +131,7 @@
         </div>
     </div>
 
-    <header class="sticky top-0 bg-white shadow z-10">
+    <header class="sticky top-0 bg-white shadow-sm z-10"> <!-- Lighter shadow -->
         <nav class="container mx-auto px-4 py-3 flex justify-center space-x-1 md:space-x-2">
             <button class="nav-btn active" data-target="dashboard-page">Dashboard</button>
             <button class="nav-btn" data-target="tracker-page">Tracker</button>
@@ -219,6 +236,7 @@
                 <div class="card">
                     <h2 class="text-xl font-bold text-indigo-700 mb-6">Workout Consistency Calendar</h2>
                     <p class="text-gray-600 mb-6">Days you marked 'Complete Workout' on the Dashboard will appear in green. Don't break the chain!</p>
+                    <!-- DESIGN UPDATE: Calendar grid is now styled and centered -->
                     <div class="calendar-grid" id="consistency-calendar">
                         <!-- Calendar days will be injected by JS -->
                     </div>
@@ -1006,6 +1024,7 @@
                             localStorage.setItem('completedWorkouts', JSON.stringify(completedWorkouts));
                         }
                         updateWorkoutCompleteButton(true);
+                        renderCalendar(); // DESIGN UPDATE: Re-render calendar on complete
                     });
                 }
             }
@@ -1174,21 +1193,27 @@
                 });
             }
 
+            // DESIGN UPDATE: Rewritten calendar function
             function renderCalendar() {
                 calendarGrid.innerHTML = '';
                 const duration = parseInt(userProfile.duration) || 8;
-                const totalDays = duration * 7;
+                const totalWeeks = duration > 0 ? duration : 8; // Default to 8 weeks
+                const totalDays = totalWeeks * 7;
                 
+                // Add Day Headers
                 const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
                 weekDays.forEach(day => {
                     const dayEl = document.createElement('div');
-                    dayEl.className = 'flex items-center justify-center text-xs font-semibold text-gray-500';
+                    dayEl.className = 'calendar-day-header'; // New class
                     dayEl.textContent = day;
                     calendarGrid.appendChild(dayEl);
                 });
                 
-                const firstDay = new Date();
-                firstDay.setDate(firstDay.getDate() - 3);
+                // Align calendar to the start of the current week (Sunday)
+                const today = new Date();
+                const todayDateStr = today.toDateString();
+                const firstDay = new Date(today);
+                firstDay.setDate(firstDay.getDate() - today.getDay()); 
 
                 for (let i = 0; i < totalDays; i++) {
                     const day = new Date(firstDay);
@@ -1199,10 +1224,14 @@
                     
                     const dayStr = day.toDateString();
                     const isCompleted = completedWorkouts.includes(dayStr);
+                    const isToday = (dayStr === todayDateStr);
                     
-                    dayEl.className = 'calendar-day';
+                    dayEl.className = 'calendar-day'; // New class
                     if (isCompleted) {
                         dayEl.classList.add('completed');
+                    }
+                    if (isToday) {
+                        dayEl.classList.add('today'); // New class
                     }
                     calendarGrid.appendChild(dayEl);
                 }
@@ -1548,6 +1577,11 @@
 
                 // Sort the schedule by time
                 const sortedSchedule = schedule.sort((a, b) => {
+                    // Handle non-time-based strings like "Evening"
+                    if (a.time.includes(":") && !b.time.includes(":")) return -1;
+                    if (!a.time.includes(":") && b.time.includes(":")) return 1;
+                    if (!a.time.includes(":") && !b.time.includes(":")) return 0;
+                    
                     const timeA = parseTime(a.time.split(' - ')[0]); // Get start time
                     const timeB = parseTime(b.time.split(' - ')[0]);
                     return timeA - timeB;

@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <!-- Chosen Palette: Refined Indigo (Gray-50, White, Gray-900, Indigo-600 Accent) -->
-    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'goal', 'diet', 'frequency', and 'workoutTime'. This allows the app to dynamically generate the entire daily schedule, centering meals around the user's chosen workout time and college constraints. -->
-    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal + Frequency -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile selections change data source from a 9-plan matrix -> Justification: Fully personalizes the workout plan -> Library: Vanilla JS. | Report Info: User-defined Diet + Workout Time -> Goal: Inform -> Viz: Dynamically Generated Schedule -> Interaction: Profile selections build a logical daily schedule -> Justification: Personalizes the user's entire day -> Library: Vanilla JS. -->
+    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'goal', 'diet', 'frequency', 'workoutTime', 'age', and 'height'. This allows for BMR/BMI calculation and dynamic, age-based workout guidance. -->
+    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal + Frequency -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile selections change data source from a 9-plan matrix -> Justification: Fully personalizes the workout plan -> Library: Vanilla JS. | Report Info: User-defined Age/Height/Weight -> Goal: Inform -> Viz: Dynamic Text (BMI/BMR) -> Interaction: Profile data auto-calculates metrics -> Justification: Provides key health data -> Library: Vanilla JS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -289,6 +289,12 @@
                 </ul>
             </div>
 
+            <!-- NEW: Age-Based Guidance Card -->
+            <div id="age-guidance-card" class="card mb-10 bg-indigo-50 border-indigo-200 hidden">
+                <h2 id="age-guidance-title" class="text-xl font-bold text-indigo-700 mb-4"></h2>
+                <p id="age-guidance-content" class="text-indigo-800"></p>
+            </div>
+
             <div class="card">
                 <h2 class="text-xl font-bold text-indigo-700 mb-2" id="workout-plan-title">Your Workout Plan</h2>
                 <!-- NEW: Subtitle for active plan -->
@@ -318,6 +324,21 @@
                     <p class="text-sm text-gray-500 mt-3 text-center">Log your weight on the "Tracker" page to see your progress here!</p>
                 </div>
                 <div class="card">
+                    <!-- NEW: Health Metrics Section -->
+                    <div class="mb-8 border-b border-gray-200 pb-8">
+                        <h2 class="text-xl font-bold text-indigo-700 mb-6">Your Health Metrics</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <span id="bmi-display" class="text-lg font-semibold text-gray-800">Your BMI: --</span>
+                                <p class="text-sm text-gray-500">Body Mass Index, a measure of body fat.</p>
+                            </div>
+                            <div>
+                                <span id="bmr-display" class="text-lg font-semibold text-gray-800">Your Est. BMR: --</span>
+                                <p class="text-sm text-gray-500">Basal Metabolic Rate. Calories your body burns at rest.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <h2 class="text-xl font-bold text-indigo-700 mb-6">Sleep & Sample Schedule</h2>
                     <p class="text-gray-700 mb-4">Poor sleep = bad recovery, more hunger, and no energy.</p>
                     
@@ -330,21 +351,6 @@
                         <li>Read a book.</li>
                         <li>Make your room dark and cool.</li>
                         <li>Try to wake up and sleep at the same time every day.</li>
-                    </ul>
-
-                    <h3 class="text-lg font-semibold text-gray-800">Sample Default Schedule (Long Day)</h3>
-                    <p class="text-sm text-gray-500 mb-3">(Your schedule will adjust based on your profile's workout time)</p>
-                    <ul class="space-y-2 text-gray-600 text-sm"> <!-- Increased spacing -->
-                        <li><strong>7:00 AM:</strong> Wake up. Drink 1L water.</li>
-                        <li><strong>7:30 AM:</strong> Breakfast.</li>
-                        <li><strong>8:30 AM - 4:00 PM:</strong> College.</li>
-                        <li><strong>1:00 PM:</strong> Lunch (Packed).</li>
-                        <li><strong>5:00 PM:</strong> Snack.</li>
-                        <li><strong>5:30 PM - 7:30 PM:</strong> Study / Relax.</li>
-                        <li><strong>7:30 PM:</strong> Dinner (Pre-Workout).</li>
-                        <li><strong>8:30 PM - 9:50 PM:</strong> Workout.</li>
-                        <li><strong>10:15 PM:</strong> Post-Workout Recovery.</li>
-                        <li><strong>11:30 PM:</strong> In bed. Sleep.</li>
                     </ul>
                 </div>
             </div>
@@ -365,15 +371,29 @@
                         <label for="profile-name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
                         <input type="text" id="profile-name" class="input-field" placeholder="Enter your name">
                     </div>
-                    
-                    <div>
-                        <label for="profile-start-weight" class="block text-sm font-medium text-gray-700 mb-1">Starting Weight (kg)</label>
-                        <input type="number" id="profile-start-weight" class="input-field" placeholder="e.g., 90">
-                    </div>
 
-                    <div>
-                        <label for="profile-goal-weight" class="block text-sm font-medium text-gray-700 mb-1">Goal Weight (kg)</label>
-                        <input type="number" id="profile-goal-weight" class="input-field" placeholder="e.g., 80">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- NEW: Age Input -->
+                        <div>
+                            <label for="profile-age" class="block text-sm font-medium text-gray-700 mb-1">Your Age</label>
+                            <input type="number" id="profile-age" class="input-field" placeholder="e.g., 25">
+                        </div>
+                        <!-- NEW: Height Input -->
+                        <div>
+                            <label for="profile-height" class="block text-sm font-medium text-gray-700 mb-1">Your Height (in cm)</label>
+                            <input type="number" id="profile-height" class="input-field" placeholder="e.g., 183">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="profile-start-weight" class="block text-sm font-medium text-gray-700 mb-1">Starting Weight (kg)</label>
+                            <input type="number" id="profile-start-weight" class="input-field" placeholder="e.g., 90">
+                        </div>
+                        <div>
+                            <label for="profile-goal-weight" class="block text-sm font-medium text-gray-700 mb-1">Goal Weight (kg)</label>
+                            <input type="number" id="profile-goal-weight" class="input-field" placeholder="e.g., 80">
+                        </div>
                     </div>
 
                     <div>
@@ -891,6 +911,9 @@
                 if (targetId === 'diet-page') {
                     renderDietPlan();
                 }
+                if (targetId === 'goals-page') {
+                    updateHealthMetrics();
+                }
             }
 
             navButtons.forEach(btn => {
@@ -1110,9 +1133,30 @@
             const workoutPlanTitle = document.getElementById('workout-plan-title');
             const workoutPlanDescription = document.getElementById('workout-plan-description');
             const workoutPlanContainer = document.getElementById('workout-plan-container');
+            // NEW: Age Guidance elements
+            const ageGuidanceCard = document.getElementById('age-guidance-card');
+            const ageGuidanceTitle = document.getElementById('age-guidance-title');
+            const ageGuidanceContent = document.getElementById('age-guidance-content');
 
-            // NEW: Updated to render phases
+            // NEW: Updated to render phases AND age guidance
             function renderFullWorkoutPlan() {
+                const age = parseInt(userProfile.age);
+                if (!age || age < 16) {
+                    ageGuidanceCard.classList.add('hidden');
+                } else {
+                    ageGuidanceCard.classList.remove('hidden');
+                    if (age < 25) {
+                        ageGuidanceTitle.textContent = "Age Bracket: Prime (Under 25)";
+                        ageGuidanceContent.textContent = "Your body is in its prime for recovery. Focus on progressive overload and pushing the intensity on your main lifts. Don't neglect form.";
+                    } else if (age < 40) {
+                        ageGuidanceTitle.textContent = "Age Bracket: Peak (25-39)";
+                        ageGuidanceContent.textContent = "Focus on consistency and listening to your body. Form is critical. Ensure you are fully warming up before lifts and cooling down after.";
+                    } else {
+                        ageGuidanceTitle.textContent = "Age Bracket: Master (40+)";
+                        ageGuidanceContent.textContent = "Prioritize warm-ups and mobility (10-15 min). Focus on controlled reps over heavy 1-rep maxes. Reduce high-impact exercises if you feel joint pain. An extra rest day is smart.";
+                    }
+                }
+
                 const currentPlanKey = userProfile.goal || 'fatLoss';
                 const currentFreqKey = userProfile.frequency || '3day';
                 
@@ -1239,6 +1283,9 @@
             
             // --- Goal Chart Logic ---
             const goalChartTitle = document.getElementById('goal-chart-title');
+            // NEW: Health metrics elements
+            const bmiDisplay = document.getElementById('bmi-display');
+            const bmrDisplay = document.getElementById('bmr-display');
 
             function updateGoalChart() {
                 const startWeight = parseFloat(userProfile.startWeight) || 0;
@@ -1346,18 +1393,43 @@
                 }
             }
 
+            // NEW: Health Metrics Calculator
+            function updateHealthMetrics() {
+                const height = parseFloat(userProfile.height);
+                const weight = parseFloat(userProfile.startWeight);
+                const age = parseInt(userProfile.age);
+
+                if (height && weight && height > 0 && weight > 0) {
+                    const heightM = height / 100;
+                    const bmi = (weight / (heightM * heightM)).toFixed(1);
+                    bmiDisplay.textContent = `Your BMI: ${bmi}`;
+                } else {
+                    bmiDisplay.textContent = `Your BMI: --`;
+                }
+
+                if (height && weight && age && height > 0 && weight > 0 && age > 0) {
+                    // Mifflin-St Jeor equation for males
+                    const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+                    bmrDisplay.textContent = `Your Est. BMR: ${bmr.toFixed(0)} Calories/Day`;
+                } else {
+                    bmrDisplay.textContent = `Your Est. BMR: --`;
+                }
+            }
+
             // --- Profile Page Logic ---
             const setupModal = document.getElementById('setup-modal');
             const goToProfileBtn = document.getElementById('go-to-profile-btn');
             const dashboardTitle = document.getElementById('dashboard-title');
             
             const profileNameInput = document.getElementById('profile-name');
+            const profileAgeInput = document.getElementById('profile-age'); // NEW
+            const profileHeightInput = document.getElementById('profile-height'); // NEW
             const profileStartWeightInput = document.getElementById('profile-start-weight');
             const profileGoalWeightInput = document.getElementById('profile-goal-weight');
             const profileDurationInput = document.getElementById('profile-duration');
             const dietChoiceBtns = document.querySelectorAll('#diet-choices .goal-choice-btn');
-            const frequencyChoiceBtns = document.querySelectorAll('#frequency-choices .goal-choice-btn'); // NEW
-            const profileWorkoutTimeSelect = document.getElementById('profile-workout-time'); // NEW
+            const frequencyChoiceBtns = document.querySelectorAll('#frequency-choices .goal-choice-btn'); 
+            const profileWorkoutTimeSelect = document.getElementById('profile-workout-time'); 
             const goalChoiceBtns = document.querySelectorAll('#goal-choices .goal-choice-btn');
             const saveProfileBtn = document.getElementById('save-profile-btn');
             const resetAppBtn = document.getElementById('reset-app-btn');
@@ -1417,10 +1489,12 @@
 
             saveProfileBtn.addEventListener('click', () => {
                 userProfile.name = profileNameInput.value;
+                userProfile.age = profileAgeInput.value; // NEW
+                userProfile.height = profileHeightInput.value; // NEW
                 userProfile.startWeight = profileStartWeightInput.value;
                 userProfile.goalWeight = profileGoalWeightInput.value;
                 userProfile.duration = profileDurationInput.value;
-                userProfile.workoutTime = profileWorkoutTimeSelect.value; // NEW
+                userProfile.workoutTime = profileWorkoutTimeSelect.value; 
                 
                 // This saves the in-memory choices to localStorage
                 localStorage.setItem('userProfile', JSON.stringify(userProfile));
@@ -1431,6 +1505,7 @@
                 // Now, reload everything based on the new saved data
                 loadProfile();
                 updateGoalChart();
+                updateHealthMetrics(); // NEW
                 renderFullWorkoutPlan();
                 renderDietPlan();
                 selectToday(); // Re-run to update dashboard with new diet
@@ -1444,18 +1519,20 @@
             function loadProfile() {
                 userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
                 
-                // NEW: Updated check to include frequency and workoutTime
-                if (!userProfile.name || !userProfile.diet || !userProfile.goal || !userProfile.frequency || !userProfile.workoutTime) {
+                // NEW: Updated check to include age and height
+                if (!userProfile.name || !userProfile.diet || !userProfile.goal || !userProfile.frequency || !userProfile.workoutTime || !userProfile.age || !userProfile.height) {
                     setTimeout(() => setupModal.classList.remove('hidden'), 500);
                 }
 
                 dashboardTitle.textContent = userProfile.name ? `Welcome, ${userProfile.name}!` : "Welcome! Please set up your profile.";
                 
                 profileNameInput.value = userProfile.name || '';
+                profileAgeInput.value = userProfile.age || ''; // NEW
+                profileHeightInput.value = userProfile.height || ''; // NEW
                 profileStartWeightInput.value = userProfile.startWeight || '';
                 profileGoalWeightInput.value = userProfile.goalWeight || '';
                 profileDurationInput.value = userProfile.duration || '';
-                profileWorkoutTimeSelect.value = userProfile.workoutTime || '20:00'; // NEW
+                profileWorkoutTimeSelect.value = userProfile.workoutTime || '20:00'; 
                 
                 // This part reads from localStorage and applies the 'active' class on page load
                 dietChoiceBtns.forEach(btn => {
@@ -1621,6 +1698,7 @@
                 
                 updateWaterTracker();
                 updateGoalChart();
+                updateHealthMetrics(); // NEW
                 renderFullWorkoutPlan();
                 renderDietPlan();
                 selectToday();

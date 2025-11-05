@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <!-- Chosen Palette: Refined Indigo (Gray-50, White, Gray-900, Indigo-600 Accent) -->
-    <!-- Application Structure Plan: A 6-section SPA (Dashboard, Tracker, Diet, Workout, Goals, Profile). Profile now includes a 'goal' (fatLoss, muscle, fitness) which dynamically changes the data source for the 'Workout Plan' page and the 'Dashboard's' daily workout. This makes the workout plan fully personalized. -->
-    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile goal selection changes data source for workout UI -> Justification: Personalizes the entire workout plan -> Library: Vanilla JS. | Report Info: Static Schedule & Meals -> Goal: Synthesize -> Viz: Day-selector updating a schedule card -> Interaction: Click day to update text -> Justification: Core synthesis, combines schedule and diet for daily use -> Library: Vanilla JS. -->
+    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'diet' ('veg'/'nonVeg') which dynamically repopulates the 'Diet Plan' page and the 'Dashboard' schedule. This personalizes all three pillars: Workouts, Goals, and Diet. -->
+    <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile goal selection changes data source for workout UI -> Justification: Personalizes the entire workout plan -> Library: Vanilla JS. | Report Info: User-defined Diet -> Goal: Inform -> Viz: Dynamic Text/Card List -> Interaction: Profile diet selection changes data source for diet UI -> Justification: Personalizes the entire diet plan -> Library: Vanilla JS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -16,11 +16,9 @@
             background-color: #f9fafb;
             color: #1f2937;
         }
-        /* NEW: Cleaner nav button style */
         .nav-btn {
             @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150;
         }
-        /* NEW: Cleaner active nav button style */
         .nav-btn.active {
             @apply bg-indigo-50 text-indigo-700 font-semibold;
         }
@@ -30,14 +28,12 @@
         .page-section.active {
             display: block;
         }
-        /* NEW: Subtler shadow, sharper corners */
         .card {
             @apply bg-white shadow-md rounded-lg p-6 overflow-hidden;
         }
         .day-btn {
             @apply px-4 py-2 rounded-md text-sm font-medium text-gray-600 bg-white shadow-sm border border-gray-200 hover:bg-gray-100 transition-colors duration-150 flex-1;
         }
-        /* NEW: Updated to new color */
         .day-btn.active {
             @apply bg-indigo-600 text-white shadow-inner;
         }
@@ -81,22 +77,18 @@
         .modal-content {
             @apply bg-white rounded-lg shadow-2xl p-8 max-w-lg w-full;
         }
-        /* NEW: Updated to new color */
         .goal-choice-btn {
             @apply w-full text-left p-4 border border-gray-300 rounded-md hover:bg-indigo-50 cursor-pointer;
         }
         .goal-choice-btn.active {
             @apply bg-indigo-50 border-indigo-500 ring-2 ring-indigo-200;
         }
-        /* NEW: General input style */
         .input-field {
             @apply w-full p-3 border border-gray-300 rounded-md shadow-sm;
         }
-        /* NEW: Primary button style */
         .btn-primary {
             @apply w-full bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700 transition-colors duration-150;
         }
-        /* NEW: Danger button style */
         .btn-danger {
             @apply w-full bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition-colors duration-150;
         }
@@ -106,7 +98,6 @@
 
     <div id="setup-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <!-- NEW: Cleaner Typography -->
             <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Welcome!</h2>
             <p class="text-lg text-gray-600 mb-6">Let's personalize your plan. Please set up your profile to get started.</p>
             <button id="go-to-profile-btn" class="btn-primary py-3">
@@ -115,7 +106,6 @@
         </div>
     </div>
 
-    <!-- NEW: Subtler shadow on header -->
     <header class="sticky top-0 bg-white shadow z-10">
         <nav class="container mx-auto px-4 py-3 flex justify-center space-x-1 md:space-x-2">
             <button class="nav-btn active" data-target="dashboard-page">Dashboard</button>
@@ -134,7 +124,6 @@
         ======================== -->
         <section class="page-section active" id="dashboard-page">
             <div class="mb-6">
-                <!-- NEW: Cleaner Typography -->
                 <h1 id="dashboard-title" class="text-3xl font-extrabold text-gray-900 mb-2">Welcome!</h1>
                 <p class="text-lg text-gray-600">Use this dashboard to see your workout and full daily schedule. Select a day to get started.</p>
             </div>
@@ -154,7 +143,6 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="flex flex-col gap-6">
                     <div class="card">
-                        <!-- NEW: Cleaner Typography -->
                         <h2 class="text-xl font-bold text-indigo-700 mb-4">Today's Workout</h2>
                         <div id="dashboard-workout">
                             <p class="text-gray-500">Select a day above to see your plan.</p>
@@ -165,7 +153,6 @@
                     <div class="card">
                         <h2 class="text-xl font-bold text-indigo-700 mb-4">Daily Water Tracker</h2>
                         <div class="flex items-center justify-center space-x-4">
-                            <!-- NEW: Cleaner button style -->
                             <button id="water-minus-btn" class="bg-white border border-gray-300 text-gray-700 rounded-full w-10 h-10 text-2xl font-bold hover:bg-gray-50">-</button>
                             <span id="water-count" class="text-3xl font-bold text-indigo-600">0</span>
                             <span class="text-xl text-gray-500">/ 16 glasses</span>
@@ -232,15 +219,15 @@
         ======================== -->
         <section class="page-section" id="diet-page">
              <div class="mb-6">
-                <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 1: The Vegetarian Diet Plan</h1>
-                <p class="text-lg text-gray-600">This section details a sample high-protein vegetarian diet. Explore the core principles and all meal options here. This is the most critical part of your plan.</p>
+                <h1 id="diet-plan-title" class="text-3xl font-extrabold text-gray-900 mb-2">Pillar 1: Your Diet Plan</h1>
+                <p id="diet-plan-description" class="text-lg text-gray-600">This plan is based on your profile. Explore the core principles and all meal options here.</p>
             </div>
 
             <div class="card mb-6">
                 <h2 class="text-xl font-bold text-indigo-700 mb-4">Core Dietary Principles</h2>
                 <ul class="list-disc list-inside space-y-2 text-gray-700">
                     <li><strong>Water is Your Best Friend:</strong> Drink 3-4 liters per day. Start with a liter first thing in the morning.</li>
-                    <li><strong>Protein in Every Meal:</strong> Use paneer, tofu, lentils (dal), chickpeas (chana), kidney beans (rajma), Greek yogurt, and sattu.</li>
+                    <li><strong>Protein in Every Meal:</strong> This is your #1 priority. Focus on lean sources to stay full and maintain muscle.</li>
                     <li><strong>Cut Out "White" Foods:</strong> No sugar, white flour (maida), or fried foods.</li>
                     <li><strong>Embrace Fiber:</strong> Eat a large salad with lunch and dinner to stay full.</li>
                     <li><strong>Smart Carbs:</strong> Choose wholewheat roti, brown rice, or quinoa over white rice.</li>
@@ -248,108 +235,9 @@
             </div>
 
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Sample Meal Structure</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="card">
-                    <div class="meal-card-header" data-target="meal-1-content">
-                        <h3 class="text-lg font-semibold text-indigo-700">Meal 1: Breakfast (~7:30 AM)</h3>
-                        <span class="text-xl font-bold">+</span>
-                    </div>
-                    <div id="meal-1-content" class="pt-4 space-y-3 hidden">
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 1: "Natural" Protein Shake</h4>
-                            <p class="text-gray-600 text-sm">1 cup thick curd, 2-3 tbsp Sattu, 1 tbsp chia seeds, 1/2 banana, Water/Milk.</p>
-                        </div>
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 2: Solid Meal</h4>
-                            <p class="text-gray-600 text-sm">2-3 Moong Dal Chillas or 1 bowl Poha/Upma (with peanuts & peas).</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">Option 3: Simple</h4>
-                            <p class="text-gray-600 text-sm">1 bowl sprouts salad and 1 glass salted lassi/buttermilk.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="meal-card-header" data-target="meal-2-content">
-                        <h3 class="text-lg font-semibold text-indigo-700">Meal 2: Lunch (~1:00 PM)</h3>
-                        <span class="text-xl font-bold">+</span>
-                    </div>
-                    <div id="meal-2-content" class="pt-4 space-y-3 hidden">
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 1: Classic</h4>
-                            <p class="text-gray-600 text-sm">1 large bowl Dal (Rajma/Chana), 1 small bowl Brown Rice (or 2 Rotis), 1 large bowl salad.</p>
-                        </div>
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 2: Paneer/Tofu</h4>
-                            <p class="text-gray-600 text-sm">100-150g Paneer/Tofu Bhurji, 2 wholewheat Rotis, Side of curd.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">Option 3: Salad Meal</h4>
-                            <p class="text-gray-600 text-sm">Large "Buddha Bowl" (chickpeas, quinoa, roasted vegetables).</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="meal-card-header" data-target="meal-3-content">
-                        <h3 class="text-lg font-semibold text-indigo-700">Snack (~5:00 PM)</h3>
-                        <span class="text-xl font-bold">+</span>
-                    </div>
-                    <div id="meal-3-content" class="pt-4 space-y-3 hidden">
-                        <p class="text-gray-600">This fuels you between lunch and your pre-workout dinner.</p>
-                        <ul class="list-disc list-inside text-gray-600">
-                            <li>An apple or banana</li>
-                            <li>A handful of roasted chana</li>
-                            <li>1 glass of buttermilk (chaas)</li>
-                            <li>A handful of almonds (15-20)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="meal-card-header" data-target="meal-4-content">
-                        <h3 class="text-lg font-semibold text-indigo-700">Meal 3: Dinner (~7:30 PM)</h3>
-                        <span class="text-xl font-bold">+</span>
-                    </div>
-                    <div id="meal-4-content" class="pt-4 space-y-3 hidden">
-                        <p class="text-gray-600">This is your main pre-workout meal (eat 60-90 mins before).</p>
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 1: High Protein</h4>
-                            <p class="text-gray-600 text-sm">150g Paneer Tikka with sautéed vegetables and 1 large green salad.</p>
-                        </div>
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 2: Lentil Focus</h4>
-                            <p class="text-gray-600 text-sm">1 large bowl thick Dal/Sambar, 1 small bowl rice OR 1 Roti.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">Option 3: Soy</h4>
-                            <p class="text-gray-600 text-sm">Soy Chunk (Nutrela) curry with 1-2 wholewheat Rotis.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card md:col-span-2">
-                    <div class="meal-card-header" data-target="meal-5-content">
-                        <h3 class="text-lg font-semibold text-indigo-700">Meal 4: Post-Workout Recovery (~10:15 PM)</h3>
-                        <span class="text-xl font-bold">+</span>
-                    </div>
-                    <div id="meal-5-content" class="pt-4 space-y-3 hidden">
-                        <p class="text-gray-700 font-semibold">Do not skip this. It should be light but high in protein.</p>
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 1: Best Choice</h4>
-                            <p class="text-gray-600 text-sm">The "Natural" Protein Shake (Sattu, curd, etc.) - fast-digesting.</p>
-                        </div>
-                        <div class="border-b pb-2">
-                            <h4 class="font-semibold text-gray-800">Option 2: Simple</h4>
-                            <p class="text-gray-600 text-sm">1 glass of milk + 1 banana.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">Option 3: Light</h4>
-                            <p class="text-gray-600 text-sm">100g Paneer (lightly salted) or a small bowl of curd.</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- NEW: Diet plan options will be dynamically injected here -->
+            <div id="diet-plan-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Meal cards will be built by JS -->
             </div>
         </section>
 
@@ -399,7 +287,7 @@
                     <p class="text-sm text-gray-500 mt-2 text-center">Log your weight on the "Tracker" page to see your progress here!</p>
                 </div>
                 <div class="card">
-                    <h2 class="text-xl font-bold text-indigo-7Do 700 mb-4">Sleep & Sample Schedule</h2>
+                    <h2 class="text-xl font-bold text-indigo-700 mb-4">Sleep & Sample Schedule</h2>
                     <p class="text-gray-700 mb-3">Poor sleep = bad recovery, more hunger, and no energy.</p>
                     <h3 class="text-lg font-semibold text-gray-800">Your Goal: 7.5-8 hours</h3>
                     <p class="text-gray-700 mb-4">You must be in bed by 11:30 PM to wake up at 7:00 AM.</p>
@@ -413,6 +301,7 @@
                     </ul>
 
                     <h3 class="text-lg font-semibold text-gray-800">Sample Schedule (Long Day)</h3>
+                    <p class="text-sm text-gray-500 mb-2">(Your meals will adjust based on your diet profile)</p>
                     <ul class="space-y-1 text-gray-600 text-sm">
                         <li><strong>7:00 AM:</strong> Wake up. Drink 1L water.</li>
                         <li><strong>7:30 AM:</strong> Breakfast.</li>
@@ -430,7 +319,7 @@
         </section>
 
         <!-- =======================
-             NEW: PROFILE PAGE
+             PROFILE PAGE
         ======================== -->
         <section class="page-section" id="profile-page">
             <div class="mb-6">
@@ -460,6 +349,21 @@
                         <input type="number" id="profile-duration" class="input-field" placeholder="e.g., 8, 12, 24">
                     </div>
 
+                    <!-- NEW: Dietary Preference -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">What is your dietary preference?</label>
+                        <div class="flex gap-4" id="diet-choices">
+                            <button class="goal-choice-btn flex-1" data-diet="veg">
+                                <span class="font-semibold text-gray-800">Vegetarian</span>
+                                <p class="text-sm text-gray-600">Paneer, Tofu, Lentils, Sattu</p>
+                            </button>
+                            <button class="goal-choice-btn flex-1" data-diet="nonVeg">
+                                <span class="font-semibold text-gray-800">Non-Vegetarian</span>
+                                <p class="text-sm text-gray-600">Eggs, Chicken, Fish, Lentils</p>
+                            </button>
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">What is your primary fitness goal?</label>
                         <div class="space-y-3" id="goal-choices">
@@ -474,7 +378,7 @@
                             <button class="goal-choice-btn" data-goal="fitness">
                                 <span class="font-semibold text-gray-800">General Fitness (Maintenance)</span>
                                 <p class="text-sm text-gray-600">Focus on consistency and full-body workouts. (Great for beginners)</p>
-A                            </button>
+                            </button>
                         </div>
                     </div>
 
@@ -498,7 +402,6 @@ A                            </button>
             
             // --- App Data (Static) ---
             const appData = {
-                // NEW: 3 Complete Workout Plans
                 workoutPlans: {
                     fatLoss: {
                         name: "Fat Loss Plan (5-Day)",
@@ -540,14 +443,88 @@ A                            </button>
                         ]
                     }
                 },
-                schedules: {
-                    sun: { college: false, schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
-                    mon: { college: true, collegeEnd: "2:00 PM", schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
-                    tue: { college: true, collegeEnd: "2:00 PM", schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
-                    wed: { college: true, collegeEnd: "4:00 PM", schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:3J0 PM', text: 'In bed. Sleep.' }] },
-                    thu: { college: true, collegeEnd: "4:00 PM", schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
-                    fri: { college: true, collegeEnd: "4:00 PM", schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' }, { time: 'Evening', text: '<strong>REST DAY.</strong> No gym. Focus on diet, hydration, and sleep. Use the evening to relax or study.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
-                    sat: { college: false, schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br>Type <u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, handful of roasted chana, or handful of almonds.' }, { time: 'Evening', text: '<strong>MANDATORY REST DAY.</strong> No gym. Focus on diet and hydration. This is a good day to meal prep (e.g., boil chickpeas, lentils) for the week ahead.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] }
+                // NEW: Restructured diet plans
+                dietPlans: {
+                    veg: {
+                        name: "Vegetarian Diet Plan",
+                        description: "A high-protein vegetarian plan focusing on paneer, tofu, lentils, and sattu.",
+                        meals: [
+                            { id: "meal-1", title: "Meal 1: Breakfast (~7:30 AM)", options: [
+                                { name: "Option 1: 'Natural' Protein Shake", desc: "1 cup thick curd, 2-3 tbsp Sattu, 1 tbsp chia seeds, 1/2 banana, Water/Milk." },
+                                { name: "Option 2: Solid Meal", desc: "2-3 Moong Dal Chillas or 1 bowl Poha/Upma (with peanuts & peas)." },
+                                { name: "Option 3: Simple", desc: "1 bowl sprouts salad and 1 glass salted lassi/buttermilk." }
+                            ]},
+                            { id: "meal-2", title: "Meal 2: Lunch (~1:00 PM)", options: [
+                                { name: "Option 1: Classic", desc: "1 large bowl Dal (Rajma/Chana), 1 small bowl Brown Rice (or 2 Rotis), 1 large bowl salad." },
+                                { name: "Option 2: Paneer/Tofu", desc: "100-150g Paneer/Tofu Bhurji, 2 wholewheat Rotis, Side of curd." },
+                                { name: "Option 3: Salad Meal", desc: "Large 'Buddha Bowl' (chickpeas, quinoa, roasted vegetables)." }
+                            ]},
+                            { id: "meal-3", title: "Snack (~5:00 PM)", options: [
+                                { name: "Option 1", desc: "An apple or banana" },
+                                { name: "Option 2", desc: "A handful of roasted chana" },
+                                { name: "Option 3", desc: "1 glass of buttermilk (chaas) or a handful of almonds (15-20)" }
+                            ]},
+                            { id: "meal-4", title: "Meal 3: Dinner (~7:30 PM)", options: [
+                                { name: "Option 1: High Protein", desc: "150g Paneer Tikka with sautéed vegetables and 1 large green salad." },
+                                { name: "Option 2: Lentil Focus", desc: "1 large bowl thick Dal/Sambar, 1 small bowl rice OR 1 Roti." },
+                                { name: "Option 3: Soy", desc: "Soy Chunk (Nutrela) curry with 1-2 wholewheat Rotis." }
+                            ]},
+                            { id: "meal-5", title: "Meal 4: Post-Workout Recovery (~10:15 PM)", options: [
+                                { name: "Option 1: Best Choice", desc: "The 'Natural' Protein Shake (Sattu, curd, etc.) - fast-digesting." },
+                                { name: "Option 2: Simple", desc: "1 glass of milk + 1 banana." },
+                                { name: "Option 3: Light", desc: "100g Paneer (lightly salted) or a small bowl of curd." }
+                            ]}
+                        ],
+                        schedule: {
+                            sun: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.<br><u>Opt 3:</u> Large "Buddha Bowl".' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            mon: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            tue: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            wed: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            thu: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Paneer Tikka &amp; salad.<br><u>Opt 2:</u> Thick Dal/Sambar &amp; 1 Roti/Rice.<br><u>Opt 3:</u> Soy Chunk curry.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 1 glass milk + 1 banana.<br><u>Opt 3:</u> 100g Paneer.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            fri: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: 'Evening', text: '<strong>REST DAY.</strong> No gym. Focus on diet, hydration, and sleep. Use the evening to relax or study.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            sat: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> "Natural" Protein Shake.<br><u>Opt 2:</u> 2-3 Moong Dal Chillas.<br><u>Opt 3:</u> 1 bowl sprouts salad.' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> Dal, Brown Rice/Roti, Salad.<br><u>Opt 2:</u> 100-150g Paneer/Tofu Bhurji.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: 'Evening', text: '<strong>MANDATORY REST DAY.</strong> No gym. Focus on diet and hydration. This is a good day to meal prep (e.g., boil chickpeas, lentils) for the week ahead.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] }
+                        }
+                    },
+                    nonVeg: {
+                        name: "Non-Vegetarian Diet Plan",
+                        description: "A high-protein plan including eggs, chicken, and fish, with Indian flavors.",
+                        meals: [
+                            { id: "meal-1", title: "Meal 1: Breakfast (~7:30 AM)", options: [
+                                { name: "Option 1: Eggs", desc: "4-5 Egg Whites (boiled or scrambled) + 1-2 whole eggs & 2 slices wholewheat toast." },
+                                { name: "Option 2: Oats", desc: "1 bowl Oatmeal with milk, nuts, and 1/2 banana. (Add 2 boiled eggs on the side)." },
+                                { name: "Option 3: Indian", desc: "2-3 Moong Dal Chillas. (Add 2 boiled eggs on the side)." }
+                            ]},
+                            { id: "meal-2", title: "Meal 2: Lunch (~1:00 PM)", options: [
+                                { name: "Option 1: Chicken", desc: "150g grilled/tandoori Chicken Breast, 1 small bowl Brown Rice (or 2 Rotis), 1 large bowl salad." },
+                                { name: "Option 2: Fish", desc: "150g grilled/steamed Fish (e.g., Rohu, Surmai), 1 small bowl Brown Rice, 1 large bowl salad." },
+                                { name: "Option 3: Eggs & Lentils", desc: "1 large bowl Dal (Rajma/Chana) + 3 Egg Whites (boiled), 2 Rotis, Side of curd." }
+                            ]},
+                            { id: "meal-3", title: "Snack (~5:00 PM)", options: [
+                                { name: "Option 1", desc: "An apple or banana" },
+                                { name: "Option 2", desc: "A handful of roasted chana" },
+                                { name: "Option 3", desc: "1 glass of buttermilk (chaas) or a handful of almonds (15-20)" }
+                            ]},
+                            { id: "meal-4", title: "Meal 3: Dinner (~7:30 PM)", options: [
+                                { name: "Option 1: Chicken Curry", desc: "150g Chicken Curry (less oil, home-style) with 1-2 wholewheat Rotis OR 1 small bowl rice." },
+                                { name: "Option 2: Fish Tikka", desc: "150g Fish Tikka with sautéed vegetables and 1 large green salad." },
+                                { name: "Option 3: Egg Bhurji", desc: "5-6 Egg Bhurji (scramble) with 2 wholewheat Rotis." }
+                            ]},
+                            { id: "meal-5", title: "Meal 4: Post-Workout Recovery (~10:15 PM)", options: [
+                                { name: "Option 1: Best Choice", desc: "1 glass of milk + 1-2 bananas. (Fast-digesting and simple)." },
+                                { name: "Option 2: Light Meal", desc: "100g grilled Chicken or Paneer (lightly salted)." },
+                                { name: "Option 3: Simple", desc: "3 Boiled Egg Whites." }
+                            ]}
+                        ],
+                        schedule: {
+                             sun: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> 4-5 Egg Whites + 1-2 whole eggs.<br><u>Opt 2:</u> Oatmeal + 2 boiled eggs.' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> 150g Chicken Breast, Brown Rice, Salad.<br><u>Opt 2:</u> 150g Fish, Brown Rice, Salad.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Chicken Curry &amp; 1-2 Rotis.<br><u>Opt 2:</u> 150g Fish Tikka &amp; salad.<br><u>Opt 3:</u> 5-6 Egg Bhurji.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> 1 glass milk + 1-2 bananas.<br><u>Opt 2:</u> 100g grilled Chicken.<br><u>Opt 3:</u> 3 Boiled Egg Whites.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            mon: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> 4-5 Egg Whites + 1-2 whole eggs.<br><u>Opt 2:</u> Oatmeal + 2 boiled eggs.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> 150g Chicken Breast, Brown Rice, Salad.<br><u>Opt 2:</u> 150g Fish, Brown Rice, Salad.' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Chicken Curry &amp; 1-2 Rotis.<br><u>Opt 2:</u> 150g Fish Tikka &amp; salad.<br><u>Opt 3:</u> 5-6 Egg Bhurji.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> 1 glass milk + 1-2 bananas.<br><u>Opt 2:</u> 100g grilled Chicken.<br><u>Opt 3:</u> 3 Boiled Egg Whites.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            tue: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> 4-5 Egg Whites + 1-2 whole eggs.<br><u>Opt 2:</u> Oatmeal + 2 boiled eggs.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 2:00 PM', text: '<strong>College (Short Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> 150g Chicken Breast, Brown Rice, Salad.<br><u>Opt 2:</u> 150g Fish, Brown Rice, Salad.' }, { time: '2:30 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Chicken Curry &amp; 1-2 Rotis.<br><u>Opt 2:</u> 150g Fish Tikka &amp; salad.<br><u>Opt 3:</u> 5-6 Egg Bhurji.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> 1 glass milk + 1-2 bananas.<br><u>Opt 2:</u> 100g grilled Chicken.<br><u>Opt 3:</u> 3 Boiled Egg Whites.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            wed: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> 4-5 Egg Whites + 1-2 whole eggs.<br><u>Opt 2:</u> Oatmeal + 2 boiled eggs.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> 150g Chicken Breast, Brown Rice, Salad.<br><u>Opt 2:</u> 150g Fish, Brown Rice, Salad.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Chicken Curry &amp; 1-2 Rotis.<br><u>Opt 2:</u> 150g Fish Tikka &amp; salad.<br><u>Opt 3:</u> 5-6 Egg Bhurji.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> 1 glass milk + 1-2 bananas.<br><u>Opt 2:</u> 100g grilled Chicken.<br><u>Opt 3:</u> 3 Boiled Egg Whites.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            thu: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> 4-5 Egg Whites + 1-2 whole eggs.<br><u>Opt 2:</u> Oatmeal + 2 boiled eggs.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> 150g Chicken Breast, Brown Rice, Salad.<br><u>Opt 2:</u> 150g Fish, Brown Rice, Salad.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: '5:30 PM - 7:30 PM', text: 'Study / Relax.' }, { time: '7:30 PM', text: '<strong>Dinner (Meal 3 / Pre-Workout)</strong><br><u>Opt 1:</u> 150g Chicken Curry &amp; 1-2 Rotis.<br><u>Opt 2:</u> 150g Fish Tikka &amp; salad.<br><u>Opt 3:</u> 5-6 Egg Bhurji.' }, { time: '8:15 PM', text: 'Leave for the gym.' }, { time: '8:30 PM - 9:50 PM', text: '<strong>Workout (See Dashboard)</strong>' }, { time: '10:15 PM', text: '<strong>Post-Workout (Meal 4)</strong><br><u>Opt 1:</u> 1 glass milk + 1-2 bananas.<br><u>Opt 2:</u> 100g grilled Chicken.<br><u>Opt 3:</u> 3 Boiled Egg Whites.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            fri: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> 4-5 Egg Whites + 1-2 whole eggs.<br><u>Opt 2:</u> Oatmeal + 2 boiled eggs.' }, { time: '8:00 AM', text: 'Leave for college.' }, { time: '8:30 AM - 4:00 PM', text: '<strong>College (Long Day)</strong>' }, { time: '1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> 150g Chicken Breast, Brown Rice, Salad.<br><u>Opt 2:</u> 150g Fish, Brown Rice, Salad.' }, { time: '4:45 PM', text: 'Arrive home.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: 'Evening', text: '<strong>REST DAY.</strong> No gym. Focus on diet, hydration, and sleep. Use the evening to relax or study.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] },
+                            sat: { schedule: [ { time: '7:00 AM', text: 'Wake up. Drink 1 liter of water.' }, { time: '7:30 AM', text: '<strong>Breakfast (Meal 1)</strong><br><u>Opt 1:</u> 4-5 Egg Whites + 1-2 whole eggs.<br><u>Opt 2:</u> Oatmeal + 2 boiled eggs.' }, { time: '1CONVERTED_PAGE_BREAK: 1:00 PM', text: '<strong>Lunch (Meal 2)</strong><br><u>Opt 1:</u> 150g Chicken Breast, Brown Rice, Salad.<br><u>Opt 2:</u> 150g Fish, Brown Rice, Salad.' }, { time: '5:00 PM', text: '<strong>Snack</strong><br>Apple or banana, roasted chana, or almonds.' }, { time: 'Evening', text: '<strong>MANDATORY REST DAY.</strong> No gym. Focus on diet and hydration. This is a good day to meal prep for the week ahead.' }, { time: '11:30 PM', text: 'In bed. Sleep.' }] }
+                        }
+                    }
                 }
             };
 
@@ -584,6 +561,10 @@ A                            </button>
                 if (targetId === 'workout-page') {
                     renderFullWorkoutPlan();
                 }
+                // NEW: Render diet plan when navigating
+                if (targetId === 'diet-page') {
+                    renderDietPlan();
+                }
             }
 
             navButtons.forEach(btn => {
@@ -606,7 +587,9 @@ A                            </button>
                     dayButtons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    const scheduleData = appData.schedules[day];
+                    // NEW: Dynamic data source for schedule
+                    const dietKey = userProfile.diet || 'veg';
+                    const scheduleData = appData.dietPlans[dietKey].schedule[day];
                     const currentPlanKey = userProfile.goal || 'fatLoss';
                     const workoutPlan = appData.workoutPlans[currentPlanKey];
                     const workoutData = workoutPlan.days.find(d => d.key === day);
@@ -623,14 +606,18 @@ A                            </button>
                     }
                     
                     let scheduleHtml = '<div class="space-y-4">';
-                    scheduleData.schedule.forEach(item => {
-                        scheduleHtml += `
-                            <div class="flex">
-                                <div class="w-24 text-sm font-medium text-gray-600">${item.time}</div>
-                                <div class="flex-1 text-sm text-gray-800">${item.text}</div>
-                            </div>
-                        `;
-                    });
+                    if (scheduleData) {
+                        scheduleData.schedule.forEach(item => {
+                            scheduleHtml += `
+                                <div class="flex">
+                                    <div class="w-24 text-sm font-medium text-gray-600">${item.time}</div>
+                                    <div class="flex-1 text-sm text-gray-800">${item.text}</div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                         scheduleHtml += '<p class="text-gray-500">Schedule not found.</p>';
+                    }
                     scheduleHtml += '</div>';
                     dashboardSchedule.innerHTML = scheduleHtml;
                 });
@@ -700,18 +687,56 @@ A                            </button>
                 }
             });
 
-            // --- Diet Page Logic ---
-            const mealCardHeaders = document.querySelectorAll('.meal-card-header');
-            mealCardHeaders.forEach(header => {
-                header.addEventListener('click', () => {
-                    const targetId = header.getAttribute('data-target');
-                    const content = document.getElementById(targetId);
-                    content.classList.toggle('hidden');
-                    header.querySelector('span').textContent = content.classList.contains('hidden') ? '+' : '−';
-                });
-            });
+            // --- Diet Page Logic (NEW: Dynamic) ---
+            const dietPlanTitle = document.getElementById('diet-plan-title');
+            const dietPlanDescription = document.getElementById('diet-plan-description');
+            const dietPlanContainer = document.getElementById('diet-plan-options-container');
 
-            // --- Workout Page Logic (NEW: Dynamic) ---
+            function renderDietPlan() {
+                const dietKey = userProfile.diet || 'veg';
+                const plan = appData.dietPlans[dietKey];
+
+                if (!plan) {
+                    dietPlanTitle.textContent = "No Diet Plan Selected";
+                    dietPlanDescription.textContent = "Please select a dietary preference on your Profile page.";
+                    dietPlanContainer.innerHTML = "";
+                    return;
+                }
+
+                dietPlanTitle.textContent = `Pillar 1: The ${plan.name}`;
+                dietPlanDescription.textContent = plan.description;
+
+                dietPlanContainer.innerHTML = plan.meals.map(meal => `
+                    <div class="card">
+                        <div class="meal-card-header" data-target="${meal.id}-content">
+                            <h3 class="text-lg font-semibold text-indigo-700">${meal.title}</h3>
+                            <span class="text-xl font-bold">+</span>
+                        </div>
+                        <div id="${meal.id}-content" class="pt-4 space-y-3 hidden">
+                            ${meal.options.map(opt => `
+                                <div class="border-b pb-2">
+                                    <h4 class="font-semibold text-gray-800">${opt.name}</h4>
+                                    <p class="text-gray-600 text-sm">${opt.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Re-apply event listeners to new dynamic content
+                const mealCardHeaders = dietPlanContainer.querySelectorAll('.meal-card-header');
+                mealCardHeaders.forEach(header => {
+                    header.addEventListener('click', () => {
+                        const targetId = header.getAttribute('data-target');
+                        const content = document.getElementById(targetId);
+                        content.classList.toggle('hidden');
+                        header.querySelector('span').textContent = content.classList.contains('hidden') ? '+' : '−';
+                    });
+                });
+            }
+
+
+            // --- Workout Page Logic ---
             const workoutPlanTitle = document.getElementById('workout-plan-title');
             const workoutPlanDescription = document.getElementById('workout-plan-description');
             const workoutPlanContainer = document.getElementById('workout-plan-container');
@@ -821,7 +846,7 @@ A                            </button>
                 }
             }
             
-            // --- Goal Chart Logic (NEW: Dynamic) ---
+            // --- Goal Chart Logic ---
             const goalChartTitle = document.getElementById('goal-chart-title');
 
             function updateGoalChart() {
@@ -939,7 +964,8 @@ A                            </button>
             const profileStartWeightInput = document.getElementById('profile-start-weight');
             const profileGoalWeightInput = document.getElementById('profile-goal-weight');
             const profileDurationInput = document.getElementById('profile-duration');
-            const goalChoiceBtns = document.querySelectorAll('.goal-choice-btn');
+            const dietChoiceBtns = document.querySelectorAll('#diet-choices .goal-choice-btn'); // NEW
+            const goalChoiceBtns = document.querySelectorAll('#goal-choices .goal-choice-btn');
             const saveProfileBtn = document.getElementById('save-profile-btn');
             const resetAppBtn = document.getElementById('reset-app-btn');
             const profileSavedMsg = document.getElementById('profile-saved-msg');
@@ -947,6 +973,15 @@ A                            </button>
             goToProfileBtn.addEventListener('click', () => {
                 setupModal.classList.add('hidden');
                 navigateTo('profile-page');
+            });
+
+            // NEW: Diet choice listener
+            dietChoiceBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    dietChoiceBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    userProfile.diet = btn.dataset.diet;
+                });
             });
 
             goalChoiceBtns.forEach(btn => {
@@ -962,6 +997,7 @@ A                            </button>
                 userProfile.startWeight = profileStartWeightInput.value;
                 userProfile.goalWeight = profileGoalWeightInput.value;
                 userProfile.duration = profileDurationInput.value;
+                // userProfile.diet and userProfile.goal are already set by their button clicks
                 
                 localStorage.setItem('userProfile', JSON.stringify(userProfile));
                 
@@ -971,7 +1007,8 @@ A                            </button>
                 loadProfile();
                 updateGoalChart();
                 renderFullWorkoutPlan();
-                selectToday();
+                renderDietPlan(); // NEW
+                selectToday(); // Re-run to update dashboard with new diet
             });
 
             resetAppBtn.addEventListener('click', () => {
@@ -982,7 +1019,7 @@ A                            </button>
             function loadProfile() {
                 userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
                 
-                if (!userProfile.name) {
+                if (!userProfile.name || !userProfile.diet || !userProfile.goal) { // NEW: Check for all fields
                     setTimeout(() => setupModal.classList.remove('hidden'), 500);
                 }
 
@@ -993,6 +1030,15 @@ A                            </button>
                 profileGoalWeightInput.value = userProfile.goalWeight || '';
                 profileDurationInput.value = userProfile.duration || '';
                 
+                // NEW: Load diet choice
+                dietChoiceBtns.forEach(btn => {
+                    if (btn.dataset.diet === userProfile.diet) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
                 goalChoiceBtns.forEach(btn => {
                     if (btn.dataset.goal === userProfile.goal) {
                         btn.classList.add('active');
@@ -1011,8 +1057,9 @@ A                            </button>
                 
                 updateWaterTracker();
                 updateGoalChart();
-                selectToday();
                 renderFullWorkoutPlan();
+                renderDietPlan(); // NEW
+                selectToday();
             }
 
             initApp();

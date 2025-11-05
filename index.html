@@ -6,18 +6,19 @@
     <title>Personalized Transformation Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <!-- Chosen Palette: Refined Indigo (Gray-50, White, Gray-900, Indigo-600 Accent) -->
-    <!-- Application Structure Plan: A 6-section SPA. Profile now includes 'goal', 'diet', 'frequency', 'workoutTime', 'age', 'height', and 'gender'. This allows for accurate BMR/BMI calculation and dynamic, age/gender-based workout guidance. -->
+    <!-- Chosen Palette: Energetic Yellow (Yellow-50, White, Gray-900, Indigo-600 Accent) -->
+    <!-- Application Structure Plan: A 6-section SPA. Profile includes 'goal', 'diet', 'frequency', 'workoutTime', 'age', 'height', and 'gender'. This allows for accurate BMR/BMI calculation and dynamic, age/gender-based workout guidance. -->
     <!-- Visualization & Content Choices: Report Info: User-defined Goal -> Goal: Motivate -> Viz: Line Chart -> Interaction: Dynamic (user data) -> Justification: Visualizes user's personal goal vs. actual progress -> Library: Chart.js. | Report Info: User-defined Workout Goal + Frequency -> Goal: Organize -> Viz: Dynamic Button/Detail List -> Interaction: Profile selections change data source from a 9-plan matrix -> Justification: Fully personalizes the workout plan -> Library: Vanilla JS. | Report Info: User-defined Age/Height/Weight/Gender -> Goal: Inform -> Viz: Dynamic Text (BMI/BMR) -> Interaction: Profile data auto-calculates metrics -> Justification: Provides key, accurate health data -> Library: Vanilla JS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
+            /* background-color: #f9fafb; */
+            background-color: #fefce8; /* Bright Yellow Background */
             color: #1f2937;
         }
         .nav-btn {
-            @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150 border-b-2 border-transparent;
+            @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-yellow-100 hover:text-gray-900 transition-colors duration-150 border-b-2 border-transparent;
         }
         .nav-btn.active {
             @apply bg-white text-indigo-600 font-semibold border-b-2 border-indigo-600;
@@ -35,7 +36,6 @@
             @apply px-4 py-2 rounded-md text-sm font-medium text-gray-600 bg-white shadow-sm border border-gray-200 hover:bg-gray-100 transition-colors duration-150 flex-1;
         }
         .day-btn.active {
-            /* @apply bg-indigo-600 text-white shadow-inner; */
             @apply bg-indigo-600 text-white shadow-inner ring-2 ring-indigo-400 ring-offset-1;
         }
         .workout-btn {
@@ -90,7 +90,6 @@
             @apply w-full text-left p-4 border border-gray-300 rounded-lg hover:bg-indigo-50 cursor-pointer transition-colors duration-150;
         }
         .goal-choice-btn.active {
-            /* @apply bg-indigo-50 border-indigo-600 ring-2 ring-indigo-300; */
             @apply bg-indigo-600 border-indigo-700 ring-2 ring-indigo-300;
         }
         /* NEW styles for text inside active button */
@@ -104,7 +103,6 @@
         }
         .goal-choice-btn.active .check-icon {
             display: inline-block;
-            /* @apply text-2xl text-indigo-600 font-bold; */
             @apply text-2xl text-white font-bold;
         }
         .input-field {
@@ -118,7 +116,7 @@
         }
     </style>
 </head>
-<body>
+<body class="bg-yellow-50">
 
     <div id="setup-modal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -280,7 +278,7 @@
                     <li><strong>Warm-up (10 min):</strong> 5 min light jog/incline walk + 5 min dynamic stretches.</li>
                     <li><strong>Resistance Training (45-50 min):</strong> The core of your workout.</li>
                     <li><strong>Cardio (20 min):</strong> High-Intensity or Steady State.</li>
-                    <li><strong>Cooldown (5 min):</strong> Static stretching (hold stretches for 20-30 seconds).</li>
+                    <li><strong>Cooldown (5 min):</strong> Static stretching (holding stretches for 20-30 seconds).</li>
                 </ul>
             </div>
 
@@ -453,30 +451,6 @@
                                 <div class="flex justify-between items-center">
                                     <span class="font-semibold text-gray-800">5 Days / Week</span>
                                     <span class="check-icon">✓</span>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">How many days per week can you train?</label>
-                        <div class="flex flex-col sm:flex-row gap-4" id="frequency-choices">
-                            <button class="goal-choice-btn flex-1" data-frequency="3day">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold text-gray-800">3 Days / Week</span>
-                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
-                                </div>
-                            </button>
-                             <button class="goal-choice-btn flex-1" data-frequency="4day">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold text-gray-800">4 Days / Week</span>
-                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
-                                </div>
-                            </button>
-                             <button class="goal-choice-btn flex-1" data-frequency="5day">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold text-gray-800">5 Days / Week</span>
-                                    <span class="check-icon text-2xl text-indigo-600">✓</span>
                                 </div>
                             </button>
                         </div>
@@ -1554,7 +1528,7 @@
             function loadProfile() {
                 userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
                 
-                if (!userProfile.name || !userProfile.diet || !userProfile.goal || !userProfile.frequency || !userProfile.workoutTime || !userGendera.age || !userProfile.height || !userProfile.gender) {
+                if (!userProfile.name || !userProfile.diet || !userProfile.goal || !userProfile.frequency || !userProfile.workoutTime || !userProfile.age || !userProfile.height || !userProfile.gender) {
                     setTimeout(() => setupModal.classList.remove('hidden'), 500);
                 }
 
@@ -1702,15 +1676,18 @@
                     
                     const currentPlanKey = userProfile.goal || 'fatLoss';
                     const currentFreqKey = userProfile.frequency || '3day';
-                    const workoutPlan = appData.workoutPlans[currentPlanKey][currentFreqKey];
-                    const workoutData = workoutPlan.phases[0].days.find(d => d.key === dayKey);
-                    
-                    if (workoutData && workoutData.title.toLowerCase().indexOf('rest') !== -1 && (item.text.includes("Workout") || item.text.includes("Post-Workout") || item.text.includes(mealNames.preWorkout))) {
-                        if (!seenTimes.has(restDaySlot.time)) {
-                            uniqueSchedule.push(restDaySlot);
-                            seenTimes.add(restDaySlot.time);
-                         }
-                         continue;
+                    // FIX: Check if path exists before trying to access it
+                    if (appData.workoutPlans[currentPlanKey] && appData.workoutPlans[currentPlanKey][currentFreqKey]) {
+                        const workoutPlan = appData.workoutPlans[currentPlanKey][currentFreqKey];
+                        const workoutData = workoutPlan.phases[0].days.find(d => d.key === dayKey);
+                        
+                        if (workoutData && workoutData.title.toLowerCase().indexOf('rest') !== -1 && (item.text.includes("Workout") || item.text.includes("Post-Workout") || item.text.includes(mealNames.preWorkout))) {
+                            if (!seenTimes.has(restDaySlot.time)) {
+                                uniqueSchedule.push(restDaySlot);
+                                seenTimes.add(restDaySlot.time);
+                            }
+                            continue;
+                        }
                     }
 
                     if (!seenTimes.has(item.time)) {
